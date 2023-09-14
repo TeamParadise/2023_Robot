@@ -209,7 +209,7 @@ public class Arm extends SubsystemBase {
   public CommandBase autoNudgeThreeCube(){ //nudges the arm forward for the beginning of a match
     return runOnce(()->{ //move the arm to the down position in the back (non-battery side)?
         while(ArmMotor.getSelectedSensorPosition() > EncoderConstants.BACK_TOP_COUNT + 7500){
-            ArmMotor.set(ControlMode.PercentOutput, -.22);
+            ArmMotor.set(ControlMode.PercentOutput, -.12);
         }
         ArmMotor.set(ControlMode.PercentOutput, 0);
         currentPosition = ArmPosition.BACK;

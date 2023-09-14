@@ -12,6 +12,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.PidConstants;
 import frc.robot.commands.DriveDist;
 import frc.robot.commands.DriveDistBack;
+import frc.robot.commands.DriveTime;
 import frc.robot.commands.TurnAngle;
 import frc.robot.commands.TurnToTarget;
 import frc.robot.commands.ArmCommands.flipArmParallel;
@@ -32,21 +33,20 @@ public class ThreeCubeRight extends SequentialCommandGroup {
       RobotContainer.m_Drivetrain.resetLeftEncoder(),
       RobotContainer.m_Drivetrain.resetRightEncoder(),
       //Get cube 2
-      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(2.3), new flipArmParallel()),
-      new DriveDist(0, 0.3 - PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(0.4),
+      new ParallelCommandGroup(new DriveDist(220, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT), new flipArmParallel()),
+      new ParallelCommandGroup(new DriveDist(220, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT), new flipArmParallel()),
       //Shoot cube 2
-      new DriveDist(0, PidConstants.DRIVE_SPEED - 0.2, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(0.45),
-      new ParallelCommandGroup(new DriveDist(0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(2.15), new flipArmParallel()),
-      // new DriveDist(0, PidConstants.DRIVE_SPEED - 0.3, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(0.37),
       RobotContainer.m_Arm.setPosition(1),
       //Drive cube 3
-      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(1.53), new flipArmParallel()),
+      new ParallelCommandGroup(new DriveDist(180, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT), new flipArmParallel()),
       //Turn to cube 3
-      new DriveDist(-120, -PidConstants.TURN_SPEEDRIGHT, PidConstants.kp_TURNRIGHT, PidConstants.ki_TURNRIGHT, PidConstants.kd_TURNRIGHT).withTimeout(1.05),
+      new DriveTime(-120, 0, PidConstants.kp_TURNRIGHT, PidConstants.ki_TURNRIGHT, PidConstants.kd_TURNRIGHT).withTimeout(1.05),
       //Drive past charge station 
-      new DriveDist(-100, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(1.05),
+      new DriveDist(50, -120, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT),
+      //Turn to grid
+      new DriveTime(-120, 0, PidConstants.kp_TURNRIGHT, PidConstants.ki_TURNRIGHT, PidConstants.kd_TURNRIGHT).withTimeout(1.05),
       //Drive to grid
-      new ParallelCommandGroup(new DriveDist(0, PidConstants.TURN_SPEEDRIGHT, PidConstants.kp_DRIVERIGHT, PidConstants.ki_TURNRIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(1.3), new flipArmParallel()),
+      new ParallelCommandGroup(new DriveDist(220, 0, PidConstants.TURN_SPEEDRIGHT, PidConstants.kp_DRIVERIGHT, PidConstants.ki_TURNRIGHT, PidConstants.kd_DRIVERIGHT), new flipArmParallel()),
       // new DriveDist(5, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_ADJUST, PidConstants.kd_DRIVE).withTimeout(0.4),
       RobotContainer.m_Arm.setPosition(3)
 

@@ -40,8 +40,8 @@ public final class Constants {
   public static final int OUTTAKE_SPEED = 0;
   
   public class PidConstants {
-    public static final double DRIVE_SPEED = 0.62;
-    public static final double TURN_SPEED = 0.53;
+    public static final double DRIVE_SPEED = 0.5;
+    public static final double TURN_SPEED = 0.5;
     public static final double kp_DRIVE = 0.003;
     public static final double ki_DRIVE = 0.0004; 
     public static final double kd_DRIVE = 0.001;
@@ -49,7 +49,7 @@ public final class Constants {
     public static final double ki_TURN = 0.00;
     public static final double kd_TURN = 0.0035;
     
-    public static final double TURN_SPEEDRIGHT = 0.51;
+    public static final double TURN_SPEEDRIGHT = 0.3;
     public static final double kp_DRIVERIGHT = 0.003;
     public static final double ki_DRIVERIGHT = 0.0008; 
     public static final double kd_DRIVERIGHT = 0.001;

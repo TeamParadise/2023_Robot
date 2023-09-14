@@ -27,11 +27,11 @@ public final class TwoCube extends SequentialCommandGroup {
       RobotContainer.m_Arm.waitForArm(),
       RobotContainer.m_Arm.setPosition(1),
       RobotContainer.m_Drivetrain.resetGyro(),
-      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.5), new flipArmParallel()), //try to see if this will flip the arm and drive at the same time. if not delete this line and uncomment below.
+      new ParallelCommandGroup(new DriveDist(220, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.5), new flipArmParallel()), //try to see if this will flip the arm and drive at the same time. if not delete this line and uncomment below.
       // new ParallelCommandGroup(new DriveDist()) //try to see if this will flip the arm and drive at the same time. if no
       // new ParallelCommandGroup(new DriveDist(), RobotContainer.m_Arm.flip()),
       RobotContainer.m_Drivetrain.resetGyro(),
-      new ParallelCommandGroup(new DriveDist(0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.3), new flipArmParallel()),
+      new ParallelCommandGroup(new DriveDist(220, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.3), new flipArmParallel()),
       RobotContainer.m_Vision.setToBackPipeline(),     
       new TurnToTarget(),
       RobotContainer.m_Arm.setPosition(3)
