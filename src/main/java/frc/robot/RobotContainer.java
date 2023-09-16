@@ -86,7 +86,8 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    new JoystickButton(driverController, 1).onTrue(m_Arm.setPosition(5)); //a *Low Goal
+    //new JoystickButton(driverController, 1).onTrue(m_Arm.setPosition(5)); //a *Low Goal
+    new JoystickButton(driverController, 1).onTrue(m_Drivetrain.getAutonomousCommand());
     new JoystickButton(driverController, 2).onTrue(m_Arm.setPosition(1)); //b *Middle Goal
     new JoystickButton(driverController, 3).onTrue(m_Arm.setPosition(2)); //x *High Goal
     new JoystickButton(driverController, 4).onTrue(new flipArmParallel()); //y *flip arm
