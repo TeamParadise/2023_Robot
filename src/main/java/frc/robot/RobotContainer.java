@@ -8,7 +8,9 @@ import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PidConstants;
 import frc.robot.commands.DriveArcade;
+import frc.robot.commands.DriveAutoOnly;
 import frc.robot.commands.DriveDist;
+import frc.robot.commands.DrivePid;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.TurnAngle;
@@ -65,8 +67,8 @@ public class RobotContainer {
     configureBindings(
       // private final CommandXboxController Intake = 
     );
-    m_Drivetrain.setDefaultCommand(new DriveArcade());
-    m_intake.setDefaultCommand(new IntakeCommand());
+    m_Drivetrain.setDefaultCommand(new DrivePid());
+    // m_intake.setDefaultCommand(new IntakeCommand());
   }
 
   /**
@@ -105,12 +107,14 @@ public class RobotContainer {
 
     new JoystickButton(coDriverController, 1).onTrue(m_Drivetrain.halfSpeed()); //Co Drive A //Speed in Half
     new JoystickButton(coDriverController, 2).onTrue(m_Drivetrain.toggleBrake()); //Co Drive B //Toggle brake mode
-    new JoystickButton(coDriverController, 3).onTrue(m_Arm.resetEncoder()); //Co Drive X //Reset Arm position
+    new JoystickButton(coDriverController, 3).onTrue(new DriveArcade()); //Co Drive X //Reset Arm position
     
     // new JoystickButton(coDriverController, 5).onTrue(new changePipeline()); //left bumper
     new JoystickButton(coDriverController, 5).onTrue(m_intake.startIntake()); //left bumper
     new JoystickButton(coDriverController, 6).onTrue(new flipLimelight()); //right bumper
     new JoystickButton(coDriverController, 4).onTrue(m_Drivetrain.resetGyro()); //left trigger
+
+
 
     // new POVButton(driverController, ).onTrue(m_Arm.setPosition(1));
     // new Trigger(driverController.povUp(null)).onTrue(m_Arm.setPosition(2));
@@ -127,22 +131,23 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand(String auto) {
     // An example command will be run in autonomous
-    if(auto.equals("TwoCube")){
-      return new TwoCube();
-    } else if (auto.equals("ThreeCubeLeft")){
-      return new ThreeCubeLeft();
-    } else if (auto.equals("ThreeCubeRight")){
-      return new ThreeCubeRight();
-    } else if (auto.equals("Turn45")){
-      return new Turn45();
-    }else if(auto.equals("OneCubeDrive")){
-      return new OneCubeDrive();
-    }else if(auto.equals("OneCubeNoDrive")){
-      return new OneCubeNoDrive();
-    }else if(auto.equals("OneCubeDock")){
-      return new OneCubeDock();
-    }else{
-      return new OnlyDrive();
-    }
+    return RobotContainer.m_Drivetrain.setBrakeModeAuto().andThen(RobotContainer.m_Drivetrain.resetGyro().andThen(new DriveAutoOnly()));
+    // if(auto.equals("TwoCube")){
+    //   return new TwoCube();
+    // } else if (auto.equals("ThreeCubeLeft")){
+    //   return new ThreeCubeLeft();
+    // } else if (auto.equals("ThreeCubeRight")){
+    //   return new ThreeCubeRight();
+    // } else if (auto.equals("Turn45")){
+    //   return new Turn45();
+    // }else if(auto.equals("OneCubeDrive")){
+    //   return new OneCubeDrive();
+    // }else if(auto.equals("OneCubeNoDrive")){
+    //   return new OneCubeNoDrive();
+    // }else if(auto.equals("OneCubeDock")){
+    //   return new OneCubeDock();
+    // }else{
+    //   return new OnlyDrive();
+    // }
   }
 }

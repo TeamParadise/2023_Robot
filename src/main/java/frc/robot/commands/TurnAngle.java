@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
@@ -18,7 +20,7 @@ public class TurnAngle extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_Drivetrain);
     ang = angle;
-    pid = new PIDController(0.02, 0.002, 0.003); //TUNE 
+    pid = new PIDController(0.005, 0, 0.00); //TUNE 
     done = false;
   }
 
@@ -27,7 +29,7 @@ public class TurnAngle extends CommandBase {
   public void initialize() {
     RobotContainer.m_Drivetrain.resetGyro();
     pid.enableContinuousInput(-180.0f,  180.0f); //TUNE
-    pid.setTolerance(0, 0.1); //TUNE
+    pid.setTolerance(1, 0); //TUNE
     pid.setSetpoint(ang);
     pid.reset();
     
@@ -43,12 +45,13 @@ public class TurnAngle extends CommandBase {
     //System.out.println("Turn Command Called " + ang);
     double left_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
     double right_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
-    RobotContainer.m_Drivetrain.DriveTank(left_command * -1, right_command * -1);
 
-    if (ang - Math.abs(RobotContainer.m_Drivetrain.getRobotYaw()) < 10) {
-      pid.setI(0.002);
-    }
-
+    
+    RobotContainer.m_Drivetrain.left1.set(ControlMode.PercentOutput, -left_command);
+    RobotContainer.m_Drivetrain.left2.set(ControlMode.PercentOutput, -left_command);
+    RobotContainer.m_Drivetrain.right1.set(ControlMode.PercentOutput, -right_command);
+    RobotContainer.m_Drivetrain.right2.set(ControlMode.PercentOutput, -right_command);
+    //RobotContainer.m_Drivetrain.DriveTank(left_command * -1, right_command * -1);
     
   }
 
@@ -61,6 +64,6 @@ public class TurnAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return done;
+    return pid.atSetpoint();
   }
 }

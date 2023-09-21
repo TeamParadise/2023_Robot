@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -46,7 +47,7 @@ public final class Constants {
     public static final double kvVoltSecondsPerMeter = 1.98;
     public static final double kaVoltSecondsSquaredPerMeter = 0.2;
     public static final double kPDriveVel = 8.5;
-    public static final double kTrackwidthMeters = 0.69;
+    public static final double kTrackwidthMeters = Units.inchesToMeters(23.5);
     public final static DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1;
@@ -65,9 +66,9 @@ public final class Constants {
     public static final double kd_TURN = 0.0035;
     
     public static final double TURN_SPEEDRIGHT = 0.3;
-    public static final double kp_DRIVERIGHT = 0.003;
-    public static final double ki_DRIVERIGHT = 0.0008; 
-    public static final double kd_DRIVERIGHT = 0.001;
+    public static final double kp_DRIVERIGHT = 0.015;
+    public static final double ki_DRIVERIGHT = 0.000; 
+    public static final double kd_DRIVERIGHT = 0.00;
     public static final double kp_TURNRIGHT = 0.0085;
     public static final double ki_TURNRIGHT = 0.00;
     public static final double kd_TURNRIGHT = 0.0035;

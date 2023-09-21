@@ -78,6 +78,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Only Drive", kDriveOnly);
     m_chooser.addOption("One Cube dock", kDriveDock);
     SmartDashboard.putData("Auto Choices", m_chooser);
+    RobotContainer.m_Drivetrain.resetGyro();
   }
 
   /**
@@ -168,9 +169,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    System.out.println("Pitch: " + RobotContainer.m_Drivetrain.getRobotPitch());
-    System.out.println("Yaw: " + RobotContainer.m_Drivetrain.getRobotYaw());
-    System.out.println("Roll: " + RobotContainer.m_Drivetrain.getRobotRoll());
+    // System.out.println("Pitch: " + RobotContainer.m_Drivetrain.getRobotPitch());
+    // System.out.println("Yaw: " + RobotContainer.m_Drivetrain.getRobotYaw());
+    // System.out.println("Roll: " + RobotContainer.m_Drivetrain.getRobotRoll());
+    SmartDashboard.putString("Odometry", RobotContainer.m_Drivetrain.getRobotOdometry());
   }
   
 

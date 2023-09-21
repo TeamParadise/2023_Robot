@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -40,17 +42,23 @@ import frc.robot.Constants.*;
 
 public class Drivetrain extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  WPI_TalonFX right1 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_RIGHT_1);
-  WPI_TalonFX right2 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_RIGHT_2);
+  public WPI_TalonFX right1 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_RIGHT_1);
+  public WPI_TalonFX right2 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_RIGHT_2);
 
-  WPI_TalonFX left1 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_LEFT_1);
-  WPI_TalonFX left2 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_LEFT_2);
+  public WPI_TalonFX left1 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_LEFT_1);
+  public WPI_TalonFX left2 = new WPI_TalonFX(motorPortConstants.DRIVE_TRAIN_LEFT_2);
 
 
   MotorControllerGroup leftMotors = new MotorControllerGroup(left1, left2);
-  MotorControllerGroup rightMotors = new MotorControllerGroup(right1, right2 );
+  MotorControllerGroup rightMotors = new MotorControllerGroup(right1, right2);
+
+  double left1PreviousEncoder = left1.getSelectedSensorPosition();
+  double right1PreviousEncoder = right1.getSelectedSensorPosition();
 
   DifferentialDrive drive = new DifferentialDrive(leftMotors, rightMotors);
+
+  double leftVelocity = 0;
+  double rightVelocity = 0;
   
   boolean invertedDrive = false; //togleable invert front of robot
   boolean halfSpeed = true;
@@ -69,6 +77,13 @@ public class Drivetrain extends SubsystemBase {
     m_odometry =
         new DifferentialDriveOdometry(
             ahrs.getRotation2d(), left1.getSelectedSensorPosition(), right1.getSelectedSensorPosition());
+      
+    right1.configClosedloopRamp(1);
+    right2.configClosedloopRamp(1);
+
+    left1.configClosedloopRamp(1);
+    left2.configClosedloopRamp(1);
+
   }
 
   public Pose2d getPose() {
@@ -82,12 +97,14 @@ public class Drivetrain extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     m_odometry.resetPosition(
-        ahrs.getRotation2d(), left1.getSelectedSensorPosition(), right1.getSelectedSensorPosition(), pose);
+      ahrs.getRotation2d(), left1.getSelectedSensorPosition(), right1.getSelectedSensorPosition(), pose);
   }
 
-  public void resetEncoders() {
-    left1.setSelectedSensorPosition(0);
-    right1.setSelectedSensorPosition(0);
+  public CommandBase resetEncoders() {
+    return runOnce(() -> {
+      left1.setSelectedSensorPosition(0);
+      right1.setSelectedSensorPosition(0);
+    });
   }
 
   public Command getAutonomousCommand() {
@@ -111,13 +128,13 @@ public class Drivetrain extends SubsystemBase {
             // Apply the voltage constraint
             .addConstraint(autoVoltageConstraint);
 
-    // An example trajectory to follow.  All units in meters.
+    double ahrsInitialPosition = getRobotYaw();
     Trajectory traj =
         TrajectoryGenerator.generateTrajectory(
             // Start at the origin facing the +X direction
             new Pose2d(0, 0, new Rotation2d(0)),
             // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(0, .3), new Translation2d(0, .6)),
+            List.of(),
             // End 3 meters straight ahead of where we started, facing forward
             new Pose2d(0, 1, new Rotation2d(0)),
             // Pass config
@@ -134,8 +151,8 @@ public class Drivetrain extends SubsystemBase {
               PathPlanConstants.kaVoltSecondsSquaredPerMeter),
               PathPlanConstants.kDriveKinematics,
               RobotContainer.m_Drivetrain::getWheelSpeeds,
-            new PIDController(PathPlanConstants.kPDriveVel, 0, 0),
-            new PIDController(PathPlanConstants.kPDriveVel, 0, 0),
+            new PIDController(1/500, 0, 0),
+            new PIDController(1/500, 0, 0),
             // RamseteCommand passes volts to the callback
             RobotContainer.m_Drivetrain::tankDriveVolts,
             RobotContainer.m_Drivetrain);
@@ -190,6 +207,58 @@ public class Drivetrain extends SubsystemBase {
     }else{
       drive.arcadeDrive(moveSpeed * speedMultiplier, -1*rotateSpeed  * speedMultiplier); //if yes forward becomes back (non-battery becomes forward)
     }
+  }
+  
+  PIDController leftController = new PIDController(1.0 / 300.0, 0, 0);
+  PIDController rightController = new PIDController(1.0 / 300.0, 0, 0);
+
+
+  public void pidDrive(double moveSpeed, double rotateSpeed) {
+
+    leftController.setTolerance(150);
+    rightController.setTolerance(150);
+
+    if(!halfSpeed){
+      speedMultiplier = 0.75;
+    }else{
+      speedMultiplier = 1;
+    }
+    if(!invertedDrive){ //check for invert
+      pidArcade(moveSpeed  * speedMultiplier, rotateSpeed * speedMultiplier); //if no move forward (battery side)
+
+    }else{
+      pidArcade(-1 * moveSpeed * speedMultiplier, rotateSpeed  * speedMultiplier); //if yes forward becomes back (non-battery becomes forward)
+    }
+  }
+
+  public void pidArcade(double move, double rotate) {
+    //Setpoint
+    leftController.setSetpoint(move - rotate);
+    rightController.setSetpoint((move + rotate));
+
+    SmartDashboard.putNumber("Left Setpoint: " , leftController.getSetpoint());
+    SmartDashboard.putNumber("Right Setpoint: " , rightController.getSetpoint());
+    
+    SmartDashboard.putNumber("Left Velocity: ", -left1.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Right Velocity: " , right1.getSelectedSensorVelocity());
+    
+    //Velocity
+    double leftAccel = leftController.calculate(-left1.getSelectedSensorVelocity());
+    double rightAccel = rightController.calculate(right1.getSelectedSensorVelocity());
+
+    SmartDashboard.putNumber("Left Speed: " , leftAccel);
+    SmartDashboard.putNumber("Right Speed: " , rightAccel);
+
+    leftVelocity += leftAccel * 0.02;
+    rightVelocity += rightAccel * 0.02;
+
+    //Output
+    left1.set(ControlMode.PercentOutput, -leftVelocity);
+    left2.set(ControlMode.PercentOutput, -leftVelocity);
+    right1.set(ControlMode.PercentOutput, rightVelocity);
+    right2.set(ControlMode.PercentOutput, rightVelocity);
+
+    //drive.tankDrive(leftController.calculate(left1.getSelectedSensorVelocity()), rightController.calculate(right1.getSelectedSensorVelocity()));
   }
 
   public void DriveTank(double left, double right) {
@@ -307,6 +376,12 @@ public class Drivetrain extends SubsystemBase {
     return ahrs.getAngle();
   }
 
+  public String getRobotOdometry() {
+    String string = "Degrees: " + m_odometry.getPoseMeters().getRotation().getDegrees()
+    + " \nX: " + m_odometry.getPoseMeters().getX() + "\n Y: " + m_odometry.getPoseMeters().getY();
+    return string;
+  }
+
   public CommandBase resetGyro() {
     return runOnce(() -> {
       ahrs.reset();
@@ -353,6 +428,15 @@ public class Drivetrain extends SubsystemBase {
     right2.setNeutralMode(NeutralMode.Brake);
   }
 
+  public CommandBase setBrakeModeAuto(){
+    return runOnce(() -> {
+      left1.setNeutralMode(NeutralMode.Brake);
+      left2.setNeutralMode(NeutralMode.Brake);
+      right1.setNeutralMode(NeutralMode.Brake);
+      right2.setNeutralMode(NeutralMode.Brake);
+    });
+  }
+
   public void setCoastMode(){ //sets all to coast mode (when stopped, robot will roll to a stop)
     left1.setNeutralMode(NeutralMode.Coast);
     left2.setNeutralMode(NeutralMode.Coast);
@@ -364,7 +448,12 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     m_odometry.update(
-        ahrs.getRotation2d(), left1.getSelectedSensorPosition(), right1.getSelectedSensorPosition());
+        ahrs.getRotation2d(), left1.getSelectedSensorPosition() - left1PreviousEncoder, right1.getSelectedSensorPosition() - right1PreviousEncoder);
+    left1PreviousEncoder = left1.getSelectedSensorPosition();
+    right1PreviousEncoder = right1.getSelectedSensorPosition();
+    SmartDashboard.putNumber("Gyro", getRobotYaw());
+    SmartDashboard.putData(ahrs);
+
   }
 
   @Override

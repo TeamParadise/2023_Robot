@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.AutoCommands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,21 +10,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
-public class DriveDist extends CommandBase {
-  double speed;
+public class DriveDistPid extends CommandBase {
   double angle;
-  public PIDController pid;
+  public PIDController pidTurn;
+  public PIDController pidDist;
   double in;
   double EncoderCountDist;
 
   /** Creates a new TurnAngle. */
-  public DriveDist(double inches, double ang, double spd, double kp, double ki, double kd) {
+  public DriveDistPid(double inches, double ang, double spd, double kp, double ki, double kd) {
     // Use a%ddRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_Drivetrain);
-    // RobotContainer.m_Drivetrain.resetGyro();
-    speed = spd;
     angle = ang;
-    pid = new PIDController(kp, ki, kd); //TUNE 
+    pidTurn = new PIDController(kp, ki, kd); //TUNE 
+    pidDist = new PIDController(0.00001, 0, 0);
     in = inches;
     EncoderCountDist = -1*inches*2048*3/8/1.8;
   }
@@ -34,24 +33,26 @@ public class DriveDist extends CommandBase {
   public void initialize() {
     RobotContainer.m_Drivetrain.resetLeftEncoder();
     RobotContainer.m_Drivetrain.resetRightEncoder();
-    RobotContainer.m_Drivetrain.resetGyro();
-    pid.enableContinuousInput(-180.0f,  180.0f); //TUNE
-    pid.setTolerance(0, 0.1); //TUNE
-    pid.setSetpoint(angle);
-    pid.reset();
+    pidTurn.setSetpoint(angle);
+    pidDist.setTolerance(1); //TUNE
+    pidDist.setSetpoint(in);
+    pidDist.reset();
     RobotContainer.m_Drivetrain.resetGyro();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double left_command = -1 * pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
-    double right_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
-    System.out.println("Left: " + left_command);
-    System.out.println("Right: " + right_command);
-    System.out.println("Error: " + pid.getPositionError());
+    double left_command = -1 * pidTurn.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
+    double right_command = pidTurn.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
+    
+    double leftSpeed = pidDist.calculate(RobotContainer.m_Drivetrain.getLeftEncoder());
+    
+    System.out.println("Left: " + leftSpeed);
+    // System.out.println("Right: " + );
+    System.out.println("Error: " + pidDist.getPositionError());
 
-    RobotContainer.m_Drivetrain.DriveTank((speed + left_command), (speed + right_command) * -1);
+    RobotContainer.m_Drivetrain.DriveTank((leftSpeed + left_command), (leftSpeed + right_command) * -1 * 0.90);
   }
 
   // Called once the command ends or is interrupted.
@@ -63,6 +64,6 @@ public class DriveDist extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(RobotContainer.m_Drivetrain.getLeftEncoder()) > Math.abs(EncoderCountDist);
+    return pidDist.atSetpoint();
   }
 }

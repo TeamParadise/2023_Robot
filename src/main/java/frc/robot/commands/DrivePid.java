@@ -11,8 +11,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DriveArcade extends CommandBase {
-  public DriveArcade() {
+public class DrivePid extends CommandBase {
+  public DrivePid() {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_Drivetrain);
   }
@@ -20,19 +20,18 @@ public class DriveArcade extends CommandBase {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-    RobotContainer.m_Drivetrain.setBrakeMode();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    double rotateSpeed = -RobotContainer.driverController.getLeftY();
-    double moveSpeed = RobotContainer.driverController.getRightX();
-    
+    double moveSpeed = -RobotContainer.driverController.getLeftY() * 204.8 * 20;
+    double rotateSpeed = RobotContainer.driverController.getRightX() * 204.8 * 20;
+
     MathUtil.applyDeadband(moveSpeed, 0.1);
     MathUtil.applyDeadband(rotateSpeed, 0.1);
-
-    RobotContainer.m_Drivetrain.arcadeDrive(moveSpeed, rotateSpeed);
+    
+    RobotContainer.m_Drivetrain.pidDrive(moveSpeed, rotateSpeed);
   }
 
   // Called once the command ends or is interrupted.
@@ -44,6 +43,6 @@ public class DriveArcade extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return RobotContainer.coDriverController.getYButtonPressed();
+    return false;
   }
 }
