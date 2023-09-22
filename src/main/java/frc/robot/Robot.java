@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     RobotContainer.m_Drivetrain.initializeEncoders();
-    RobotContainer.m_Drivetrain.setCoastMode();
+    RobotContainer.m_Drivetrain.setBrakeMode();
 
     if(m_chooser.getSelected().equals("TwoCube")){
       RobotContainer.m_Arm.setBackBottom();

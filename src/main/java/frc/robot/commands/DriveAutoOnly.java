@@ -18,16 +18,16 @@ public class DriveAutoOnly extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(-150, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
-      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(150, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
-      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(100, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
+      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(-150, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
+      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(150, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
+      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(100, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
       new TurnAngle(-55).withTimeout(1.5),
-      RobotContainer.m_Drivetrain.resetGyro().andThen(RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(50, 55, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
-      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(50, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT))),
-      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(100, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
+      RobotContainer.m_Drivetrain.resetGyro().andThen(RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(50, 55, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
+      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(50, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT))),
+      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(100, 0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
       new TurnAngle(-55).withTimeout(1.5),
-      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(50, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
-      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDist(-50, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT))
+      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(50, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT)),
+      RobotContainer.m_Drivetrain.resetEncoders().andThen(new DriveDistPid(-50, 0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT))
 
 
 

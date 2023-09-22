@@ -104,6 +104,7 @@ public class Drivetrain extends SubsystemBase {
     return runOnce(() -> {
       left1.setSelectedSensorPosition(0);
       right1.setSelectedSensorPosition(0);
+      resetGyro();
     });
   }
 
@@ -209,8 +210,12 @@ public class Drivetrain extends SubsystemBase {
     }
   }
   
-  PIDController leftController = new PIDController(1.0 / 300.0, 0, 0);
-  PIDController rightController = new PIDController(1.0 / 300.0, 0, 0);
+  PIDController leftController = new PIDController(1.0 / 204.8, 0, 1/150);
+  PIDController rightController = new PIDController(1.0 / 204.8, 0, 1/150);
+
+  
+  PIDController leftControllerD = new PIDController(0, 0, 1/150);
+  PIDController rightControllerD = new PIDController(0, 0, 1/150);
 
 
   public void pidDrive(double moveSpeed, double rotateSpeed) {
@@ -248,6 +253,8 @@ public class Drivetrain extends SubsystemBase {
 
     SmartDashboard.putNumber("Left Speed: " , leftAccel);
     SmartDashboard.putNumber("Right Speed: " , rightAccel);
+
+    
 
     leftVelocity += leftAccel * 0.02;
     rightVelocity += rightAccel * 0.02;

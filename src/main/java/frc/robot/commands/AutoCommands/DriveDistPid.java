@@ -15,27 +15,26 @@ public class DriveDistPid extends CommandBase {
   public PIDController pidTurn;
   public PIDController pidDist;
   double in;
-  double EncoderCountDist;
+  double EncoderCountConvert;
 
   /** Creates a new TurnAngle. */
   public DriveDistPid(double inches, double ang, double spd, double kp, double ki, double kd) {
     // Use a%ddRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_Drivetrain);
+    
+    in = inches;
+    EncoderCountConvert = -1*2048*3/8/1.8;
     angle = ang;
     pidTurn = new PIDController(kp, ki, kd); //TUNE 
-    pidDist = new PIDController(0.00001, 0, 0);
-    in = inches;
-    EncoderCountDist = -1*inches*2048*3/8/1.8;
+    pidDist = new PIDController(EncoderCountConvert * 0.000001, 0, 0);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.m_Drivetrain.resetLeftEncoder();
-    RobotContainer.m_Drivetrain.resetRightEncoder();
     pidTurn.setSetpoint(angle);
     pidDist.setTolerance(1); //TUNE
-    pidDist.setSetpoint(in);
+    pidDist.setSetpoint(EncoderCountConvert * in);
     pidDist.reset();
     RobotContainer.m_Drivetrain.resetGyro();
   }

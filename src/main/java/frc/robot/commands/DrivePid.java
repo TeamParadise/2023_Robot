@@ -25,8 +25,8 @@ public class DrivePid extends CommandBase {
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    double moveSpeed = -RobotContainer.driverController.getLeftY() * 204.8 * 20;
-    double rotateSpeed = RobotContainer.driverController.getRightX() * 204.8 * 20;
+    double moveSpeed = -RobotContainer.driverController.getLeftY() * 204.8 * 5;
+    double rotateSpeed = RobotContainer.driverController.getRightX() * 204.8 * 5;
 
     MathUtil.applyDeadband(moveSpeed, 0.1);
     MathUtil.applyDeadband(rotateSpeed, 0.1);
