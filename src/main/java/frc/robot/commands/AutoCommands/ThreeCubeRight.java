@@ -6,6 +6,7 @@ package frc.robot.commands.AutoCommands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -31,25 +32,48 @@ public class ThreeCubeRight extends SequentialCommandGroup {
       RobotContainer.m_Drivetrain.resetGyro(),
       RobotContainer.m_Drivetrain.resetLeftEncoder(),
       RobotContainer.m_Drivetrain.resetRightEncoder(),
-      //Get cube 2
-      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(2.3), new flipArmParallel()),
-      new DriveDist(0, 0.3 - PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(0.4),
+      
+      //Drive to Cube 2
+      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.5), new flipArmParallel()), //try to see if this will flip the arm and drive at the same time. if not delete this line and uncomment below.
+      
+      new WaitCommand(0.75),
+      
+      //Drive to Grid 2
+      new ParallelCommandGroup(new DriveDist(0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.3), new flipArmParallel()),
+      
       //Shoot cube 2
-      new DriveDist(0, PidConstants.DRIVE_SPEED - 0.2, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(0.45),
-      new ParallelCommandGroup(new DriveDist(0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(2.15), new flipArmParallel()),
-      // new DriveDist(0, PidConstants.DRIVE_SPEED - 0.3, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(0.37),
       RobotContainer.m_Arm.setPosition(1),
-      //Drive cube 3
-      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(1.53), new flipArmParallel()),
-      //Turn to cube 3
-      new DriveDist(-120, -PidConstants.TURN_SPEEDRIGHT, PidConstants.kp_TURNRIGHT, PidConstants.ki_TURNRIGHT, PidConstants.kd_TURNRIGHT).withTimeout(1.05),
-      //Drive past charge station 
-      new DriveDist(-100, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVERIGHT, PidConstants.ki_DRIVERIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(1.05),
-      //Drive to grid
-      new ParallelCommandGroup(new DriveDist(0, PidConstants.TURN_SPEEDRIGHT, PidConstants.kp_DRIVERIGHT, PidConstants.ki_TURNRIGHT, PidConstants.kd_DRIVERIGHT).withTimeout(1.3), new flipArmParallel()),
-      // new DriveDist(5, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_ADJUST, PidConstants.kd_DRIVE).withTimeout(0.4),
-      RobotContainer.m_Arm.setPosition(3)
+      
+      //Drive past charge station 3
+      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.03), new flipArmParallel()),
 
+      new WaitCommand(0.5),
+
+      //Turn to cube 3
+      new DriveDist(45, 0, PidConstants.kp_TURN, PidConstants.ki_TURN, PidConstants.kd_TURN).withTimeout(2),
+      
+      new WaitCommand(0.25),
+
+      //Drive to cube 3
+      new DriveDist(45, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(0.95),
+      
+      new WaitCommand(0.5),
+
+      //Drive past Station
+      new DriveDist(45, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(0.95),
+
+      new WaitCommand(0.5),
+
+      //Turn to grid
+      new DriveDist(0, 0, PidConstants.kp_TURN, PidConstants.ki_TURN, PidConstants.kd_TURN).withTimeout(2),
+
+      new WaitCommand(0.25),
+
+      //Drive to grid
+      new ParallelCommandGroup(new DriveDist(0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.03), new flipArmParallel()),
+
+      //Shoot low
+      RobotContainer.m_Arm.setPosition(3)
     );
   }
 }

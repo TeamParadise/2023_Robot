@@ -28,14 +28,19 @@ public final class TwoCube extends SequentialCommandGroup {
       RobotContainer.m_Arm.waitForArm(),
       RobotContainer.m_Arm.setPosition(1),
       RobotContainer.m_Drivetrain.resetGyro(),
-      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.5), new flipArmParallel()), //try to see if this will flip the arm and drive at the same time. if not delete this line and uncomment below.
-      // new ParallelCommandGroup(new DriveDist()) //try to see if this will flip the arm and drive at the same time. if no
-      // new ParallelCommandGroup(new DriveDist(), RobotContainer.m_Arm.flip()),
+      
+      //Drive to Cube 2
+      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.6), new flipArmParallel()), //try to see if this will flip the arm and drive at the same time. if not delete this line and uncomment below.
       new WaitCommand(1),
-      new ParallelCommandGroup(new DriveDist(0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.3), new flipArmParallel()),
-      RobotContainer.m_Vision.setToBackPipeline(),     
-      new TurnToTarget(),
-      RobotContainer.m_Arm.setPosition(3)
+      
+      //Drive to Grid 2
+      new ParallelCommandGroup(new DriveDist(0, PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2.4), new flipArmParallel()),
+      new WaitCommand(0.5),
+      //Shoot cube 2
+      RobotContainer.m_Arm.setPosition(3),
+
+      new ParallelCommandGroup(new DriveDist(0, -PidConstants.DRIVE_SPEED, PidConstants.kp_DRIVE, PidConstants.ki_DRIVE, PidConstants.kd_DRIVE).withTimeout(2), new flipArmParallel())
+
     );
   }
 }

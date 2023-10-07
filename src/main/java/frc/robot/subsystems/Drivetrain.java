@@ -70,7 +70,7 @@ public class Drivetrain extends SubsystemBase {
       drive.arcadeDrive(moveSpeed  * speedMultiplier, rotateSpeed * speedMultiplier); //if no move forward (battery side)
 
     }else{
-      drive.arcadeDrive(moveSpeed * speedMultiplier, -1*rotateSpeed  * speedMultiplier); //if yes forward becomes back (non-battery becomes forward)
+      drive.arcadeDrive(moveSpeed * speedMultiplier, -1 * rotateSpeed  * speedMultiplier); //if yes forward becomes back (non-battery becomes forward)
     }
   }
 
@@ -92,6 +92,7 @@ public class Drivetrain extends SubsystemBase {
       }
     });
   }
+
 
   public double getLeftEncoder () {
     return left1.getSelectedSensorPosition();

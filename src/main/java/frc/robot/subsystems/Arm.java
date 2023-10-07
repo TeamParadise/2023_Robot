@@ -25,6 +25,7 @@ public class Arm extends SubsystemBase {
     FRONT,
     BACK
   }
+
   //initialize variables and obejcts
   ArmPosition currentPosition = ArmPosition.FRONT;
   ArmPosition lastPosition;
@@ -266,6 +267,19 @@ public class Arm extends SubsystemBase {
         }else{
             ArmMotor.setSelectedSensorPosition(EncoderConstants.FRONT_BOTTOM_COUNT);
         }
+    });
+  }
+
+  public CommandBase toggleArmPosition(){
+    return runOnce(() -> {
+      if (ArmMotor.getSelectedSensorPosition() > 0) {
+        setBackBottom();
+        currentPosition = ArmPosition.BACK;
+      } else {
+        setFrontBottom();
+        currentPosition = ArmPosition.FRONT;
+
+      }
     });
   }
 

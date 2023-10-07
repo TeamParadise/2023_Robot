@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.EncoderConstants;
+import frc.robot.commands.SetColor;
+import frc.robot.subsystems.LedSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -78,6 +80,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Only Drive", kDriveOnly);
     m_chooser.addOption("One Cube dock", kDriveDock);
     SmartDashboard.putData("Auto Choices", m_chooser);
+
+    
   }
 
   /**
@@ -102,6 +106,7 @@ public class Robot extends TimedRobot {
     RobotContainer.m_Arm.zeroEncoder();
     
     RobotContainer.m_Drivetrain.setBrakeMode();
+
   }
 
   @Override
@@ -144,7 +149,7 @@ public class Robot extends TimedRobot {
     RobotContainer.m_Drivetrain.setCoastMode();
 
     if(m_chooser.getSelected().equals("TwoCube")){
-      RobotContainer.m_Arm.setBackBottom();
+      RobotContainer.m_Arm.setFrontBottom();
     }else if(m_chooser.getSelected().equals("OneCubeDrive")){
       RobotContainer.m_Arm.setFrontBottom();
     }else if(m_chooser.getSelected().equals("ThreeCubeLeft")){
@@ -162,15 +167,20 @@ public class Robot extends TimedRobot {
     }
 
     RobotContainer.m_Drivetrain.brakeModeBool = false;
+
     
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    System.out.println("Pitch: " + RobotContainer.m_Drivetrain.getRobotPitch());
-    System.out.println("Yaw: " + RobotContainer.m_Drivetrain.getRobotYaw());
-    System.out.println("Roll: " + RobotContainer.m_Drivetrain.getRobotRoll());
+    // System.out.println("Pitch: " + RobotContainer.m_Drivetrain.getRobotPitch());
+    // System.out.println("Yaw: " + RobotContainer.m_Drivetrain.getRobotYaw());
+    // System.out.println("Roll: " + RobotContainer.m_Drivetrain.getRobotRoll());
+    System.out.println("Arm Position: " + RobotContainer.m_Arm.getEncoderPosition());
+
+    
+
   }
   
 
@@ -200,6 +210,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {}
+  
 
   /** This function is called periodically whilst in simulation. */
   @Override
