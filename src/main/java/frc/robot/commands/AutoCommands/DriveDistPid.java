@@ -42,8 +42,8 @@ public class DriveDistPid extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double left_command = -1 * pidTurn.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
-    double right_command = pidTurn.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
+    double left_command = -1 * pidTurn.calculate(RobotContainer.m_Drivetrain.getRobotAngle());
+    double right_command = pidTurn.calculate(RobotContainer.m_Drivetrain.getRobotAngle());
     
     double leftSpeed = pidDist.calculate(RobotContainer.m_Drivetrain.getLeftEncoder());
     

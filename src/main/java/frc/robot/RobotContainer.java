@@ -8,7 +8,6 @@ import frc.robot.Constants.EncoderConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PidConstants;
 import frc.robot.commands.DriveArcade;
-import frc.robot.commands.DriveAutoOnly;
 import frc.robot.commands.DriveDist;
 import frc.robot.commands.DrivePid;
 import frc.robot.commands.ExampleCommand;
@@ -18,7 +17,6 @@ import frc.robot.commands.TurnToTarget;
 import frc.robot.commands.changePipeline;
 import frc.robot.commands.flipLimelight;
 import frc.robot.commands.ArmCommands.flipArmParallel;
-import frc.robot.commands.AutoCommands.OneCubeDock;
 import frc.robot.commands.AutoCommands.OneCubeDrive;
 import frc.robot.commands.AutoCommands.OneCubeNoDrive;
 import frc.robot.commands.AutoCommands.OnlyDrive;
@@ -67,7 +65,7 @@ public class RobotContainer {
     configureBindings(
       // private final CommandXboxController Intake = 
     );
-    m_Drivetrain.setDefaultCommand(new DrivePid());
+    // m_Drivetrain.setDefaultCommand(new DriveArcade());
     // m_intake.setDefaultCommand(new IntakeCommand());
   }
 
@@ -89,7 +87,7 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     //new JoystickButton(driverController, 1).onTrue(m_Arm.setPosition(5)); //a *Low Goal
-    new JoystickButton(driverController, 1).onTrue(m_Drivetrain.getAutonomousCommand());
+    // new JoystickButton(driverController, 1).onTrue(m_Drivetrain.getAutonomousCommand());
     new JoystickButton(driverController, 2).onTrue(m_Arm.setPosition(1)); //b *Middle Goal
     new JoystickButton(driverController, 3).onTrue(m_Arm.setPosition(2)); //x *High Goal
     new JoystickButton(driverController, 4).onTrue(new flipArmParallel()); //y *flip arm
@@ -131,7 +129,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand(String auto) {
     // An example command will be run in autonomous
-    return RobotContainer.m_Drivetrain.setBrakeModeAuto().andThen(RobotContainer.m_Drivetrain.resetGyro().andThen(new DriveAutoOnly()));
+    return RobotContainer.m_Drivetrain.followTrajectoryCommand("Test");
     // if(auto.equals("TwoCube")){
     //   return new TwoCube();
     // } else if (auto.equals("ThreeCubeLeft")){
@@ -144,8 +142,8 @@ public class RobotContainer {
     //   return new OneCubeDrive();
     // }else if(auto.equals("OneCubeNoDrive")){
     //   return new OneCubeNoDrive();
-    // }else if(auto.equals("OneCubeDock")){
-    //   return new OneCubeDock();
+    // // }else if(auto.equals("OneCubeDock")){
+    // //   return new OneCubeDock();
     // }else{
     //   return new OnlyDrive();
     // }

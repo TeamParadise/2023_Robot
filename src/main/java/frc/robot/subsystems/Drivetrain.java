@@ -5,29 +5,34 @@
 package frc.robot.subsystems;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.SPI;
+import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
+
+import edu.wpi.first.wpilibj.SerialPort;
+
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SPI;
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SerialPort;
-
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,8 +40,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.motorPortConstants;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.*;
+
 
 
 
@@ -64,123 +70,19 @@ public class Drivetrain extends SubsystemBase {
   boolean halfSpeed = true;
   public boolean brakeModeBool = true;
 
-  private final DifferentialDrive m_drive = new DifferentialDrive(leftMotors, rightMotors);
-
-  private final DifferentialDriveOdometry m_odometry;
-          
-  AHRS ahrs;
+  WPI_Pigeon2 imu;
+  DifferentialDriveOdometry m_Odometry;
+  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(23.5));
 
   public Drivetrain() {
+    imu = new WPI_Pigeon2(15);
 
-    ahrs = new AHRS(SerialPort.Port.kUSB);
+    
+    m_Odometry = new DifferentialDriveOdometry(
+    imu.getRotation2d(),
+    getLeftEncoder(), getRightEncoder(),
+    new Pose2d(0, 0, new Rotation2d()));
     // left1.setSafetyEnabled(true);
-    m_odometry =
-        new DifferentialDriveOdometry(
-            ahrs.getRotation2d(), left1.getSelectedSensorPosition(), right1.getSelectedSensorPosition());
-      
-    right1.configClosedloopRamp(1);
-    right2.configClosedloopRamp(1);
-
-    left1.configClosedloopRamp(1);
-    left2.configClosedloopRamp(1);
-
-  }
-
-  public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
-  }
-  
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(left1.getSelectedSensorVelocity(), right1.getSelectedSensorVelocity());
-  }
-
-  public void resetOdometry(Pose2d pose) {
-    resetEncoders();
-    m_odometry.resetPosition(
-      ahrs.getRotation2d(), left1.getSelectedSensorPosition(), right1.getSelectedSensorPosition(), pose);
-  }
-
-  public CommandBase resetEncoders() {
-    return runOnce(() -> {
-      left1.setSelectedSensorPosition(0);
-      right1.setSelectedSensorPosition(0);
-      resetGyro();
-    });
-  }
-
-  public Command getAutonomousCommand() {
-    // Create a voltage constraint to ensure we don't accelerate too fast
-    var autoVoltageConstraint =
-        new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(
-              PathPlanConstants.ksVolts,
-              PathPlanConstants.kvVoltSecondsPerMeter,
-              PathPlanConstants.kaVoltSecondsSquaredPerMeter),
-              PathPlanConstants.kDriveKinematics,
-            10);
-
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(
-          PathPlanConstants.kMaxSpeedMetersPerSecond,
-          PathPlanConstants.kMaxAccelerationMetersPerSecondSquared)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(PathPlanConstants.kDriveKinematics)
-            // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
-
-    double ahrsInitialPosition = getRobotYaw();
-    Trajectory traj =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(0, 1, new Rotation2d(0)),
-            // Pass config
-            config);
-
-    RamseteCommand ramseteCommand =
-        new RamseteCommand(
-            traj,
-            RobotContainer.m_Drivetrain::getPose,
-            new RamseteController(PathPlanConstants.kRamseteB, PathPlanConstants.kRamseteZeta),
-            new SimpleMotorFeedforward(
-              PathPlanConstants.ksVolts,
-              PathPlanConstants.kvVoltSecondsPerMeter,
-              PathPlanConstants.kaVoltSecondsSquaredPerMeter),
-              PathPlanConstants.kDriveKinematics,
-              RobotContainer.m_Drivetrain::getWheelSpeeds,
-            new PIDController(1/500, 0, 0),
-            new PIDController(1/500, 0, 0),
-            // RamseteCommand passes volts to the callback
-            RobotContainer.m_Drivetrain::tankDriveVolts,
-            RobotContainer.m_Drivetrain);
-
-    // Reset odometry to the starting pose of the trajectory.
-    RobotContainer.m_Drivetrain.resetOdometry(traj.getInitialPose());
-
-    // Run path following command, then stop at the end.
-    return ramseteCommand.andThen(() -> RobotContainer.m_Drivetrain.tankDriveVolts(0, 0));
-  }
-
-  public double getAverageEncoderDistance() {
-    return (left1.getSelectedSensorPosition() + right1.getSelectedSensorPosition()) / 2.0;
-  }
-
-  public double getHeading() {
-    return ahrs.getRotation2d().getDegrees();
-  }
-
-  public double getTurnRate() {
-    return -ahrs.getRate();
-  }
-
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
-    left1.setVoltage(leftVolts);
-    right1.setVoltage(rightVolts);
-    m_drive.feed();
   }
   
   public CommandBase invertDrive(){ //swap front and back of robot
@@ -218,55 +120,6 @@ public class Drivetrain extends SubsystemBase {
   PIDController rightControllerD = new PIDController(0, 0, 1/150);
 
 
-  public void pidDrive(double moveSpeed, double rotateSpeed) {
-
-    leftController.setTolerance(150);
-    rightController.setTolerance(150);
-
-    if(!halfSpeed){
-      speedMultiplier = 0.75;
-    }else{
-      speedMultiplier = 1;
-    }
-    if(!invertedDrive){ //check for invert
-      pidArcade(moveSpeed  * speedMultiplier, rotateSpeed * speedMultiplier); //if no move forward (battery side)
-
-    }else{
-      pidArcade(-1 * moveSpeed * speedMultiplier, rotateSpeed  * speedMultiplier); //if yes forward becomes back (non-battery becomes forward)
-    }
-  }
-
-  public void pidArcade(double move, double rotate) {
-    //Setpoint
-    leftController.setSetpoint(move - rotate);
-    rightController.setSetpoint((move + rotate));
-
-    SmartDashboard.putNumber("Left Setpoint: " , leftController.getSetpoint());
-    SmartDashboard.putNumber("Right Setpoint: " , rightController.getSetpoint());
-    
-    SmartDashboard.putNumber("Left Velocity: ", -left1.getSelectedSensorVelocity());
-    SmartDashboard.putNumber("Right Velocity: " , right1.getSelectedSensorVelocity());
-    
-    //Velocity
-    double leftAccel = leftController.calculate(-left1.getSelectedSensorVelocity());
-    double rightAccel = rightController.calculate(right1.getSelectedSensorVelocity());
-
-    SmartDashboard.putNumber("Left Speed: " , leftAccel);
-    SmartDashboard.putNumber("Right Speed: " , rightAccel);
-
-    
-
-    leftVelocity += leftAccel * 0.02;
-    rightVelocity += rightAccel * 0.02;
-
-    //Output
-    left1.set(ControlMode.PercentOutput, -leftVelocity);
-    left2.set(ControlMode.PercentOutput, -leftVelocity);
-    right1.set(ControlMode.PercentOutput, rightVelocity);
-    right2.set(ControlMode.PercentOutput, rightVelocity);
-
-    //drive.tankDrive(leftController.calculate(left1.getSelectedSensorVelocity()), rightController.calculate(right1.getSelectedSensorVelocity()));
-  }
 
   public void DriveTank(double left, double right) {
     drive.tankDrive(left, right);
@@ -291,8 +144,17 @@ public class Drivetrain extends SubsystemBase {
     return left1.getSelectedSensorPosition();
   }
 
+  
   public double getRightEncoder () {
-    return right1.getSelectedSensorPosition();
+    return left2.getSelectedSensorPosition();
+  }
+
+  public double getLeftEncoderVelocity () {
+    return (left1.getSelectedSensorVelocity() / 2048) * 2 * Math.PI * Units.inchesToMeters(6);
+  }
+
+  public double getRightEncoderVelocity () {
+    return (right1.getSelectedSensorVelocity() / 2048) * 2 * Math.PI * Units.inchesToMeters(6);
   }
 
   public CommandBase resetLeftEncoder () {
@@ -309,7 +171,22 @@ public class Drivetrain extends SubsystemBase {
     });
   }
 
+  public CommandBase resetEncoders() {
+    return runOnce(() -> {
+      right1.setSelectedSensorPosition(0);
+      right2.setSelectedSensorPosition(0);
+      left1.setSelectedSensorPosition(0);
+      left2.setSelectedSensorPosition(0);
+    });
+  }
 
+  
+
+  public void setMaxOutput(double maxOutput) {
+    drive.setMaxOutput(maxOutput);
+  }
+
+ 
   double leftSpeed = .40;
   double rightSpeed = .40;
   public boolean driveDistance(int inches){
@@ -337,6 +214,8 @@ public class Drivetrain extends SubsystemBase {
         return true;
       }
   }
+
+
   boolean firstTimeback = true;
   public boolean driveDistanceBack(int inches){
     if(firstTimeback){
@@ -372,26 +251,30 @@ public class Drivetrain extends SubsystemBase {
     // ahrs.set
   }
   public double getRobotPitch() {
-    return ahrs.getPitch();
+    return imu.getPitch();
   }
 
   public double getRobotRoll() {
-    return ahrs.getRoll();
+    return imu.getRoll();
   }
 
-  public double getRobotYaw() {
-    return ahrs.getAngle();
+  public double getRobotAngle() {
+    return imu.getRotation2d().getDegrees();
   }
 
-  public String getRobotOdometry() {
-    String string = "Degrees: " + m_odometry.getPoseMeters().getRotation().getDegrees()
-    + " \nX: " + m_odometry.getPoseMeters().getX() + "\n Y: " + m_odometry.getPoseMeters().getY();
-    return string;
+  public Rotation2d getRobotAngle2d() {
+    return imu.getRotation2d();
   }
+
+  // public String getRobotOdometry() {
+  //   String string = "Degrees: " + m_Odometry.getPoseMeters().getRotation().getDegrees()
+  //   + " \nX: " + m_Odometry.getPoseMeters().getX() + "\n Y: " + m_Odometry.getPoseMeters().getY();
+  //   return string;
+  // }
 
   public CommandBase resetGyro() {
     return runOnce(() -> {
-      ahrs.reset();
+      imu.reset();
     });  
   }
 
@@ -451,15 +334,97 @@ public class Drivetrain extends SubsystemBase {
     right2.setNeutralMode(NeutralMode.Coast);
   }
 
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    leftMotors.setVoltage(leftVolts);
+    rightMotors.setVoltage(rightVolts);
+    drive.feed();
+  }
+
+  // public void driveChassisSpeed(double vx, double vy, double omega){
+  //   DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(new ChassisSpeeds(vx, vy, omega));
+    
+  //   double leftVelocity = wheelSpeeds.leftMetersPerSecond;
+  //   double rightVelocity = wheelSpeeds.rightMetersPerSecond;
+
+  //   left1.set(ControlMode.Velocity, leftVelocity);
+  //   left2.follow(left1);
+
+  //   right1.set(ControlMode.Velocity, rightVelocity);
+  //   right2.follow(right1);
+
+  // }
+
+  public void driveVelocity(double left, double right){
+    
+    // left1.set(ControlMode.Velocity, left);
+    // left2.follow(left1);
+
+    System.out.println(left);
+
+
+
+    // right1.set(ControlMode.Velocity, right);
+    // right2.follow(right1);
+
+    System.out.println(right);
+
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    resetEncoders();
+    m_Odometry.resetPosition(imu.getRotation2d(), getLeftEncoder(), getRightEncoder(), pose);
+  }
+
+  public void resetPose() {
+    resetEncoders();
+    m_Odometry.resetPosition(imu.getRotation2d(), getLeftEncoder(), getRightEncoder(), new Pose2d());
+  }
+
+  Supplier<Pose2d> getPose = () -> {
+     return m_Odometry.getPoseMeters();
+  };
+
+  BiConsumer<Double, Double>  driveVolts = (left, right) -> {
+    left1.setVoltage(-left);
+    left2.setVoltage(-left);
+    right1.setVoltage(right);
+    right2.setVoltage(right);
+
+    System.out.println(left);
+    System.out.println(right);
+
+
+  };
+
+
+  
+
+  Supplier<DifferentialDriveWheelSpeeds> getCurrentSpeeds = () -> {
+    return new DifferentialDriveWheelSpeeds(getLeftEncoderVelocity() , -getRightEncoderVelocity());
+  };
+
+
+  
+  public Command followTrajectoryCommand(String traj) {
+    PathPlannerTrajectory AutoPath = PathPlanner.loadPath(traj, new PathConstraints(2 , 2));
+    return new PPRamseteCommand(
+          AutoPath,
+          getPose,
+          new RamseteController(0.07, 0),
+          new SimpleMotorFeedforward(0.02, 0),
+          kinematics,
+          getCurrentSpeeds,
+          new PIDController(0.85, 0, 0),
+          new PIDController(0.85, 0, 0),
+          driveVolts,
+          true
+          );
+}
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_odometry.update(
-        ahrs.getRotation2d(), left1.getSelectedSensorPosition() - left1PreviousEncoder, right1.getSelectedSensorPosition() - right1PreviousEncoder);
-    left1PreviousEncoder = left1.getSelectedSensorPosition();
-    right1PreviousEncoder = right1.getSelectedSensorPosition();
-    SmartDashboard.putNumber("Gyro", getRobotYaw());
-    SmartDashboard.putData(ahrs);
+    System.out.println(getLeftEncoderVelocity() + " " + -getRightEncoderVelocity());
 
   }
 

@@ -43,8 +43,8 @@ public class TurnAngle extends CommandBase {
   @Override
   public void execute() {
     //System.out.println("Turn Command Called " + ang);
-    double left_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
-    double right_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
+    double left_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotAngle());
+    double right_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotAngle());
 
     
     RobotContainer.m_Drivetrain.left1.set(ControlMode.PercentOutput, -left_command);

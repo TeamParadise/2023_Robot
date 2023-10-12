@@ -45,13 +45,13 @@ public class DriveDist extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double left_command = -1 * pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
-    double right_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotYaw());
+    double left_command = -1 * pid.calculate(RobotContainer.m_Drivetrain.getRobotAngle());
+    double right_command = pid.calculate(RobotContainer.m_Drivetrain.getRobotAngle());
     System.out.println("Left: " + left_command);
     System.out.println("Right: " + right_command);
     System.out.println("Error: " + pid.getPositionError());
 
-    RobotContainer.m_Drivetrain.DriveTank((speed + left_command), (speed + right_command) * -1);
+    RobotContainer.m_Drivetrain.tankDrive((speed + left_command), (speed + right_command) * -1);
   }
 
   // Called once the command ends or is interrupted.
