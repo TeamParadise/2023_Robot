@@ -2,12 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.AutoCommands;
+package frc.robot.commands.AutoCommands.BackupRoutines;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class DriveDistPid extends CommandBase {
@@ -51,7 +49,7 @@ public class DriveDistPid extends CommandBase {
     // System.out.println("Right: " + );
     System.out.println("Error: " + pidDist.getPositionError());
 
-    RobotContainer.m_Drivetrain.DriveTank((leftSpeed + left_command), (leftSpeed + right_command) * -1 * 0.90);
+    RobotContainer.m_Drivetrain.tankDrive((leftSpeed + left_command), (leftSpeed + right_command) * -1 * 0.90);
   }
 
   // Called once the command ends or is interrupted.

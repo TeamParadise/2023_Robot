@@ -2,17 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.DriveCommands;
 
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DrivePid extends CommandBase {
-  public DrivePid() {
+public class DriveArcade extends CommandBase {
+  public DriveArcade() {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.m_Drivetrain);
   }
@@ -20,18 +17,19 @@ public class DrivePid extends CommandBase {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
+    RobotContainer.m_Drivetrain.setBrakeMode();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   public void execute() {
-    double moveSpeed = -RobotContainer.driverController.getLeftY() * 204.8 * 5;
-    double rotateSpeed = RobotContainer.driverController.getRightX() * 204.8 * 5;
-
+    double rotateSpeed = -RobotContainer.driverController.getLeftY();
+    double moveSpeed = RobotContainer.driverController.getRightX();
+    
     MathUtil.applyDeadband(moveSpeed, 0.1);
     MathUtil.applyDeadband(rotateSpeed, 0.1);
-    
-    // RobotContainer.m_Drivetrain.pidDrive(moveSpeed, rotateSpeed);
+
+    RobotContainer.m_Drivetrain.arcadeDrive(moveSpeed, rotateSpeed);
   }
 
   // Called once the command ends or is interrupted.

@@ -8,74 +8,35 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
 
 public class Arm extends SubsystemBase {
-    //keep track of current arm position
+  //keep track of current arm position
   public enum ArmPosition{
     STARTING,
     FRONT,
     BACK
   }
+
   //initialize variables and obejcts
   ArmPosition currentPosition = ArmPosition.FRONT;
   ArmPosition lastPosition;
 
   //motor declarations
-  TalonFX ArmMotor = new TalonFX(motorPortConstants.ARM_MOTOR_PORT);
+  TalonFX ArmMotor = new TalonFX(canDeviceIds.ARM_MOTOR_PORT);
 
-  Servo limelightServo = new Servo(ServoPortConstants.LIMELIGHT_SERVO_PORT);
-  public boolean isLimeLightFront = true;
+  // Servo limelightServo = new Servo(ServoPortConstants.LIMELIGHT_SERVO_PORT);
+  // public boolean isLimeLightFront = true;
 
-  /** Creates a new ExampleSubsystem. */
   public Arm() {
     // ArmMotor_slave.follow(ArmMotor);
     ArmMotor.setNeutralMode(NeutralMode.Brake); //arm should be in brake mode
     ArmMotor.setSelectedSensorPosition(0);
   }
-
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public CommandBase exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
-  }
-
-  /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-   *
-   * @return value of some boolean subsystem state, such as a digital sensor.
-   */
-  public boolean exampleCondition() {
-    // Query some boolean state, such as a digital sensor.
-    return false;
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
-
 
   public CommandBase setPosition(int position){ //this method will raise the arm, then shoot out at that posiiton. Arm will fall back to resting state.
     if(position == 1){ //MIDDLE
@@ -121,9 +82,7 @@ public class Arm extends SubsystemBase {
         return runOnce(() -> { //doesn't matter if front or back side.
            RobotContainer.m_intake.dispense(.5, 3.5);
          });
-    }
-        
-    
+    } 
   }
 
   public CommandBase flip(){
@@ -141,19 +100,16 @@ public class Arm extends SubsystemBase {
                 ArmMotor.set(ControlMode.PercentOutput, 0);
             }
             //these all need to flip with arm
-            flipLimeServo(); //direction of limelight
+            // flipLimeServo(); //direction of limelight
             RobotContainer.m_Vision.changePipeline(); //limelight pipeline
             if(currentPosition == ArmPosition.FRONT){ //flip arm position enum
                 currentPosition = ArmPosition.BACK;
             }else{
                 currentPosition = ArmPosition.FRONT;
             }
-            
         }
     );
-    
   }
-
 
   public boolean parallelFlip(){ //TESTING THIS APPRAOCH ~ hopefully will solve issues of commands not running in parallel
     if(currentPosition == ArmPosition.FRONT){ //if the arm is in front
@@ -175,11 +131,10 @@ public class Arm extends SubsystemBase {
             return true;
         }
     }
-
   }
 
   public void parallelFlipEnd(){ //flip all values that need to be flipped after the arm flips
-    flipLimeServo();
+    // flipLimeServo();
     RobotContainer.m_Vision.changePipeline();
     if(currentPosition == ArmPosition.FRONT){
         currentPosition = ArmPosition.BACK;
@@ -209,7 +164,7 @@ public class Arm extends SubsystemBase {
   public CommandBase autoNudgeThreeCube(){ //nudges the arm forward for the beginning of a match
     return runOnce(()->{ //move the arm to the down position in the back (non-battery side)?
         while(ArmMotor.getSelectedSensorPosition() > EncoderConstants.BACK_TOP_COUNT + 7500){
-            ArmMotor.set(ControlMode.PercentOutput, -.12);
+            ArmMotor.set(ControlMode.PercentOutput, -.22);
         }
         ArmMotor.set(ControlMode.PercentOutput, 0);
         currentPosition = ArmPosition.BACK;
@@ -224,17 +179,6 @@ public class Arm extends SubsystemBase {
         
 
     });
-  }
-
-
-  public void flipLimeServo(){ //rotate limelight servo
-    if(isLimeLightFront){ //battery side
-        limelightServo.setAngle(178);
-    }else{ //no-battery side
-        limelightServo.setAngle(-5);
-    }
-    isLimeLightFront = !isLimeLightFront; //flip the direction of the limelight
-    
   }
 
   public void setArmPosition(double position) { //not used
@@ -277,17 +221,26 @@ public class Arm extends SubsystemBase {
     ArmMotor.setSelectedSensorPosition(EncoderConstants.BACK_BOTTOM_COUNT);
   }
 
-  public double getLimelightAngle(){
-    return limelightServo.getAngle();
-  }
+  @Override
+  public void periodic() {}
 
-  public void extendArm(){
-    //extend the arm
-    // ExtendMotor.
-  }
+  @Override
+  public void simulationPeriodic() {}
 
-  public void retractArm(){
-    //retract the arm
-    //motor.set(position, controlMode.position)
+
+  // public double getLimelightAngle(){
+  //   return limelightServo.getAngle();
+  // }
+
+
+  // public void flipLimeServo(){ //rotate limelight servo
+  //    if(isLimeLightFront){ //battery side
+  //        limelightServo.setAngle(178);
+    //   }else{ //no-battery side
+    //       limelightServo.setAngle(-5);
+    //   }
+    //   isLimeLightFront = !isLimeLightFront; //flip the direction of the limelight
+      
+    // }
+
   }
-}
