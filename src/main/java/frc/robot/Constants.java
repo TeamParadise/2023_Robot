@@ -26,9 +26,9 @@ public final class Constants {
     public static final int FRONT_TOP_COUNT = 12000;
     public static final int FRONT_MIDDLE_COUNT = 15000;
 
-    public static final int FRONT_BOTTOM_COUNT = 24450; //adjust for zeroing
+    public static final int FRONT_BOTTOM_COUNT = 24400;
     //arm rotation encoder counts
-    public static final int BACK_BOTTOM_COUNT = -26100; //adjust for zeroing
+    public static final int BACK_BOTTOM_COUNT = -23677;
     public static final int BACK_MIDDLE_COUNT = -17000;
     public static final int BACK_TOP_COUNT = -17000;
     //telescoping arm encoder counts
@@ -40,14 +40,14 @@ public final class Constants {
   public static final int OUTTAKE_SPEED = 0;
   
   public class PidConstants {
-    public static final double DRIVE_SPEED = 0.62;
+    public static final double DRIVE_SPEED = 0.58;
     public static final double TURN_SPEED = 0.53;
-    public static final double kp_DRIVE = 0.003;
-    public static final double ki_DRIVE = 0.0004; 
+    public static final double kp_DRIVE = 0.004;
+    public static final double ki_DRIVE = 0.000; 
     public static final double kd_DRIVE = 0.001;
     public static final double kp_TURN = 0.03;
     public static final double ki_TURN = 0.00;
-    public static final double kd_TURN = 0.0035;
+    public static final double kd_TURN = 0.001;
     
     public static final double TURN_SPEEDRIGHT = 0.51;
     public static final double kp_DRIVERIGHT = 0.003;

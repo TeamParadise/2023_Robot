@@ -44,13 +44,18 @@ public class Intake extends SubsystemBase {
   public Intake() {
     intake1.setInverted(true);
     intake2.setInverted(true);
+
+    intake1.setSmartCurrentLimit(25);
+    intake1.setSmartCurrentLimit(25);
+    
+
   }
 
   public void run_in(){
     if(intakeLimitSwitch.get() == true){ //if limit switch is not held
       holding = false; //we are not holding a cube
-      intake1.set(.4); //set intaking speeds
-      intake2.set(-.4);
+      intake1.set(0.35); //set intaking speeds
+      intake2.set(-0.35);
       // setSolenoidState(holding);
       
     }else{
