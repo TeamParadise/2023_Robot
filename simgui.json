@@ -48,6 +48,11 @@
       "/SmartDashboard/Talon FX [4]": "Motor Controller"
     },
     "windows": {
+      "/SmartDashboard/Auto Choices": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "window": {
           "visible": true

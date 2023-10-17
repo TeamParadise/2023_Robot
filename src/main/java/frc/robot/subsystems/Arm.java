@@ -143,6 +143,20 @@ public class Arm extends SubsystemBase {
     }
   }
 
+
+
+
+  public CommandBase scoreHighAuto(){ //nudges the arm forward for the beginning of a match
+    return runOnce(()->{ //move the arm to the down position in the back (non-battery side)?
+        while(ArmMotor.getSelectedSensorPosition() > EncoderConstants.BACK_TOP_COUNT){
+            ArmMotor.set(ControlMode.PercentOutput, -.4);        }
+        RobotContainer.m_intake.dispense(.8, 4);
+    });
+  }
+
+
+
+
   public CommandBase autoNudge(){ //nudges the arm forward for the beginning of a match
     return runOnce(()->{ //move the arm to the down position in the back (non-battery side)?
         while(ArmMotor.getSelectedSensorPosition() > EncoderConstants.BACK_TOP_COUNT + 10000){

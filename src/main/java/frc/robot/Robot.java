@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    RobotContainer.m_Arm.zeroEncoder();
+    // RobotContainer.m_Arm.zeroEncoder();
     if (disabledTimer.hasElapsed(3))
     {
       RobotContainer.m_Drivetrain.setCoastMode();
