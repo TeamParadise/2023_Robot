@@ -12,7 +12,10 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
 import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.PIDController;
@@ -26,23 +29,30 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.canDeviceIds;
-
+import frc.robot.commands.ArmCommands.flipArmParallel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 import edu.wpi.first.math.util.Units;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import frc.robot.RobotContainer;
 
 public class Drivetrain extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
   public WPI_TalonFX right1 = new WPI_TalonFX(canDeviceIds.DRIVE_TRAIN_RIGHT_1);
   public WPI_TalonFX right2 = new WPI_TalonFX(canDeviceIds.DRIVE_TRAIN_RIGHT_2);
 
@@ -66,7 +76,7 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     resetEncoders();
     imu = new WPI_Pigeon2(canDeviceIds.PIDGEON_2_PORT);
-    kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(23.5));
+    kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(23));
     m_Odometry = new DifferentialDriveOdometry(imu.getRotation2d(), getLeftEncoderMeters(), getRightEncoderMeters(), new Pose2d(0, 0, new Rotation2d()));
     m_field = new Field2d();
     Pigeon2Configuration config = new Pigeon2Configuration();
@@ -85,17 +95,24 @@ public class Drivetrain extends SubsystemBase {
   }
 
   BiConsumer<Double, Double>  driveVolts = (left, right) -> {
-    left1.setVoltage(left);
-    left2.setVoltage(left);
-    right1.setVoltage(-right);
-    right2.setVoltage(-right);
+    leftMotors.setVoltage(left);
+    rightMotors.setVoltage(-right);
+    drive.feed();
+    SmartDashboard.putNumber("leftVoltage", left);
+    SmartDashboard.putNumber("rightVoltage",right);
+  };
+
+ public void voltTank(double left, double right){
+    leftMotors.setVoltage(left);
+    rightMotors.setVoltage(right);
+    drive.feed();
     SmartDashboard.putNumber("leftVoltage", left);
     SmartDashboard.putNumber("rightVoltage",right);
   };
 
   public CommandBase invertDrive(){ //swap front and back of robot
     return runOnce(()->{
-      speedMultiplier = speedMultiplier *-1;
+      speedMultiplier *= -1;
     }); 
   }
 
@@ -146,7 +163,15 @@ public class Drivetrain extends SubsystemBase {
 
   public Pose2d getFieldPos(){
     return m_Odometry.getPoseMeters();
-    }
+  }
+
+  public void resetPose() {
+      m_Odometry.resetPosition(getRobotAngle2d(), getLeftEncoderMeters(), getRightEncoderMeters(), new Pose2d());
+  }
+    
+  Consumer<Pose2d>  resetPose = (pose) -> {
+    resetOdometry(pose);
+  };
 
   Supplier<DifferentialDriveWheelSpeeds> getCurrentSpeeds = () -> {
     return new DifferentialDriveWheelSpeeds(getLeftEncoderVelocity() , getRightEncoderVelocity());
@@ -154,16 +179,7 @@ public class Drivetrain extends SubsystemBase {
   
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_Odometry.resetPosition(imu.getRotation2d(), getLeftEncoderMeters(), getRightEncoderMeters(), pose);
-  }
-
-  public void resetPose() {
-    m_Odometry.resetPosition(imu.getRotation2d(), getLeftEncoderMeters(), getRightEncoderMeters(), new Pose2d());
-  }
-  
-  public void zeroGyro(){
-    imu.reset();
-    System.out.println(imu.getRotation2d().unaryMinus());
+    m_Odometry.resetPosition(getRobotAngle2d(), getLeftEncoderMeters(), getRightEncoderMeters(), pose);
   }
 
   public double getRobotPitch() {
@@ -186,6 +202,11 @@ public class Drivetrain extends SubsystemBase {
     return runOnce(() -> {
       imu.reset();
     });  
+  } 
+
+  public void zeroGyro(){
+    imu.reset();
+    System.out.println(imu.getRotation2d());
   }
 
   public double getLeftEncoder () {
@@ -193,27 +214,23 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getLeftEncoderVelocity () {
-    // return (left1.getSelectedSensorVelocity() / 2048) * 2 * Math.PI * Units.inchesToMeters(6);
-    return -(2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorVelocity() / 2048) / 8.45) * 10);
+    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorVelocity() / 2048) * 10) / 7);
   }
 
   public double getLeftEncoderMeters () {
-    // return (left1.getSelectedSensorVelocity() / 2048) * 2 * Math.PI * Units.inchesToMeters(6);
-    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorPosition() / 2048) / 8.45));
+    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorPosition() / 2048) / 7));
   }
 
   public double getRightEncoder () {
-    return left2.getSelectedSensorPosition();
+    return right1.getSelectedSensorPosition();
   }
 
   public double getRightEncoderVelocity () {
-    // return (right1.getSelectedSensorVelocity() / 2048) * 2 * Math.PI * Units.inchesToMeters(6);
-    return (2 * Math.PI * Units.inchesToMeters(3) * ((right1.getSelectedSensorVelocity() / 2048) / 8.45) * 10);
+    return -(2 * Math.PI * Units.inchesToMeters(3) * ((right1.getSelectedSensorVelocity() / 2048) * 10) / 7);
   }
 
   public double getRightEncoderMeters () {
-    // return (right1.getSelectedSensorVelocity() / 2048) * 2 * Math.PI * Units.inchesToMeters(6);
-    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorPosition() / 2048) / 8.45));
+    return -(2 * Math.PI * Units.inchesToMeters(3) * ((right1.getSelectedSensorPosition() / 2048) / 7));
   }
 
   public CommandBase resetEncoders() {
@@ -245,26 +262,58 @@ public class Drivetrain extends SubsystemBase {
       right2.setSelectedSensorPosition(0);
     });
   }
-
-  public Command followTrajectoryCommand(String traj) {
-    PathPlannerTrajectory AutoPath = PathPlanner.loadPath(traj, new PathConstraints(3 , 3));
-
-    this.resetOdometry(AutoPath.getInitialPose());
-
-    return new PPRamseteCommand(
-          AutoPath,
-          getPose,
-          new RamseteController(0.7, 0.0),
-          new SimpleMotorFeedforward(0, 0),
-          kinematics,
-          getCurrentSpeeds,
-          new PIDController(0.75, 0, 0),
-          new PIDController(0.75, 0, 0),
-          driveVolts,
-          true,
-          this
-          );
+  
+  private void updateState(List<State> list) {
+    PathPlannerServer.sendActivePath(list); 
   }
+  
+  public CommandBase followPath(String traj) {
+    List<PathPlannerTrajectory> AutoPath = PathPlanner.loadPathGroup(traj, new PathConstraints(2.5 , 2.5));
+    HashMap<String, Command> eventMap = new HashMap<>();
+    PIDConstants PID = new PIDConstants(2, 0, 0.1);
+
+    // this.resetOdometry(AutoPath.getInitialPose());
+
+    eventMap.put("Flip Arm", new flipArmParallel());
+    eventMap.put("Shoot High", RobotContainer.m_Arm.setPosition(1));
+    eventMap.put("Shoot Mid", RobotContainer.m_Arm.setPosition(2));
+    eventMap.put("Shoot Low", RobotContainer.m_Arm.setPosition(3));
+
+    // eventMap.put("Flip Arm", new PrintCommand("Flipping Arm"));
+    // eventMap.put("Shoot High", new PrintCommand("Scoring High"));
+    // eventMap.put("Shoot Mid", new PrintCommand("Shooting Mid"));
+    // eventMap.put("Shoot Low", new PrintCommand("Shooting Low"));
+
+    RamseteAutoBuilder autoBuilder = 
+    new RamseteAutoBuilder(
+      getPose, 
+      resetPose, 
+      new RamseteController(), 
+      kinematics,
+      new SimpleMotorFeedforward(1, 1),
+      getCurrentSpeeds,
+      PID,
+      driveVolts, 
+      eventMap, 
+      false,
+      this);
+
+    return Commands.sequence(autoBuilder.fullAuto(AutoPath));
+
+  //   return new PPRamseteCommand(
+  //         AutoPath,
+  //         getPose,
+  //         new RamseteController(),
+  //         new SimpleMotorFeedforward(1, 1),
+  //         kinematics,
+  //         getCurrentSpeeds,
+  //         new PIDController(3, 0, 0.1),
+  //         new PIDController(3, 0, 0.1),
+  //         driveVolts,
+  //         false,
+  //         this
+  //         ).raceWith(new RepeatCommand(new RunCommand(() -> updateState(AutoPath.getStates()))));
+}
 
   double leftSpeed = .40;
   double rightSpeed = .40;
@@ -328,8 +377,10 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Right Velocity", getRightEncoderVelocity());
     SmartDashboard.putNumber("Left Position Meters", getLeftEncoderMeters());
     SmartDashboard.putNumber("Right Position Meters", getRightEncoderMeters());
+    SmartDashboard.putNumber("Gyro", imu.getRotation2d().getDegrees());
     m_Odometry.update(getRobotAngle2d(), getLeftEncoderMeters(), getRightEncoderMeters());
     m_field.setRobotPose(getFieldPos());
+
   }
 
   // @Override

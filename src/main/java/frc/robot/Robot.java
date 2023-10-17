@@ -137,7 +137,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-   
+   RobotContainer.m_Drivetrain.voltTank(2, -2 );
   }
 
   /** This function is called once when the robot is first started up. */
