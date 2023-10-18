@@ -274,17 +274,17 @@ public class Drivetrain extends SubsystemBase {
 
     // this.resetOdometry(AutoPath.getInitialPose());
 
-    // eventMap.put("Flip Arm", new flipArmParallel());
-    // eventMap.put("Shoot High Auto", RobotContainer.m_Arm.scoreHighAuto());
-    // eventMap.put("Shoot High", RobotContainer.m_Arm.setPosition(1));
-    // eventMap.put("Shoot Mid", RobotContainer.m_Arm.setPosition(2));
-    // eventMap.put("Shoot Low", RobotContainer.m_Arm.setPosition(3));
+    eventMap.put("Flip Arm", new flipArmParallel());
+    eventMap.put("Shoot High Auto", RobotContainer.m_Arm.scoreHighAuto());
+    eventMap.put("Shoot High", RobotContainer.m_Arm.setPosition(1));
+    eventMap.put("Shoot Mid", RobotContainer.m_Arm.setPosition(2));
+    eventMap.put("Shoot Low", RobotContainer.m_Arm.setPosition(3));
 
-    eventMap.put("Flip Arm", new PrintCommand("Flipping Arm"));
-    eventMap.put("Shoot High", new PrintCommand("Scoring High"));
-    eventMap.put("Shoot High Auto", new PrintCommand("Shoot High Auto"));
-    eventMap.put("Shoot Mid", new PrintCommand("Shooting Mid"));
-    eventMap.put("Shoot Low", new PrintCommand("Shooting Low"));
+    // eventMap.put("Flip Arm", new PrintCommand("Flipping Arm"));
+    // eventMap.put("Shoot High", new PrintCommand("Scoring High"));
+    // eventMap.put("Shoot High Auto", new PrintCommand("Shoot High Auto"));
+    // eventMap.put("Shoot Mid", new PrintCommand("Shooting Mid"));
+    // eventMap.put("Shoot Low", new PrintCommand("Shooting Low"));
 
     RamseteAutoBuilder autoBuilder = 
     new RamseteAutoBuilder(

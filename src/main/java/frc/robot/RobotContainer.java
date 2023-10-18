@@ -23,6 +23,7 @@ import frc.robot.subsystems.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -35,16 +36,18 @@ public class RobotContainer {
 
   public static  CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   public static  CommandXboxController coDriverController = new CommandXboxController(OperatorConstants.kCoDriverControllerPort);
+  public static XboxController xDriverController = new XboxController(2);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     configureBindings();
     m_Drivetrain.setDefaultCommand(new DriveArcade());
-    // m_intake.setDefaultCommand(new IntakeCommand());
+    m_intake.setDefaultCommand(new IntakeCommand());
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   private void configureBindings() {
+    driverController.a().onTrue(m_Arm.setPosition(3)); //a *Low Goal
     driverController.b().onTrue(m_Arm.setPosition(1)); //b *Middle Goal
     driverController.x().onTrue(m_Arm.setPosition(2)); //x *High Goal
     driverController.y().onTrue(new flipArmParallel()); //y *flip arm
