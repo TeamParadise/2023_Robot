@@ -16,9 +16,11 @@ import frc.robot.commands.AutoCommands.BackupRoutines.OneCubeNoDrive;
 import frc.robot.commands.AutoCommands.BackupRoutines.ThreeCubeLeft;
 import frc.robot.commands.AutoCommands.BackupRoutines.ThreeCubeRight;
 import frc.robot.commands.DriveCommands.DriveArcade;
+import frc.robot.commands.LEDCommands.ShowSide;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,6 +35,7 @@ public class RobotContainer {
   public final static Arm m_Arm = new Arm();
   public static Intake m_intake = new Intake();
   public static Vision m_Vision = new Vision();
+  public final static LED m_LED = new LED();
 
   public static  CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   public static  CommandXboxController coDriverController = new CommandXboxController(OperatorConstants.kCoDriverControllerPort);
@@ -43,6 +46,7 @@ public class RobotContainer {
     configureBindings();
     m_Drivetrain.setDefaultCommand(new DriveArcade());
     m_intake.setDefaultCommand(new IntakeCommand());
+    m_LED.setDefaultCommand(new ShowSide());
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
