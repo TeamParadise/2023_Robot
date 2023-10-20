@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -27,7 +28,7 @@ public class Arm extends SubsystemBase {
   ArmPosition lastPosition;
 
   //motor declarations
-  TalonFX ArmMotor = new TalonFX(canDeviceIds.ARM_MOTOR_PORT);
+  public TalonFX ArmMotor = new TalonFX(canDeviceIds.ARM_MOTOR_PORT);
 
   // Servo limelightServo = new Servo(ServoPortConstants.LIMELIGHT_SERVO_PORT);
   // public boolean isLimeLightFront = true;
@@ -36,6 +37,7 @@ public class Arm extends SubsystemBase {
     // ArmMotor_slave.follow(ArmMotor);
     ArmMotor.setNeutralMode(NeutralMode.Brake); //arm should be in brake mode
     ArmMotor.setSelectedSensorPosition(0);
+    ArmMotor.configOpenloopRamp(0.2);
   }
 
   public CommandBase setPosition(int position){ //this method will raise the arm, then shoot out at that posiiton. Arm will fall back to resting state.
@@ -146,11 +148,16 @@ public class Arm extends SubsystemBase {
 
 
 
-  public CommandBase scoreHighAuto(){ //nudges the arm forward for the beginning of a match
-    return runOnce(()->{ //move the arm to the down position in the back (non-battery side)?
-        while(ArmMotor.getSelectedSensorPosition() > EncoderConstants.BACK_TOP_COUNT){
-            ArmMotor.set(ControlMode.PercentOutput, -.2);        }
-        RobotContainer.m_intake.dispense(.8, 4);
+  public CommandBase scoreHighAuto(){ 
+    return runOnce(()->{ 
+        while(ArmMotor.getSelectedSensorPosition() < 8500){
+            if (ArmMotor.getSelectedSensorPosition() < 3500)
+                ArmMotor.set(ControlMode.PercentOutput, .2);      
+            else
+                ArmMotor.set(ControlMode.PercentOutput, 0);
+            }
+        currentPosition = ArmPosition.FRONT;
+        RobotContainer.m_intake.dispense(0.8, 2);
     });
   }
 
@@ -235,7 +242,9 @@ public class Arm extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    SmartDashboard.putNumber("Arm Position", getEncoderPosition());
+  }
 
   @Override
   public void simulationPeriodic() {}

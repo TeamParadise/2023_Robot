@@ -214,11 +214,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getLeftEncoderVelocity () {
-    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorVelocity() / 2048) * 10) / 7);
+    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorVelocity() / 2048) * 10) / 8.45);
   }
 
   public double getLeftEncoderMeters () {
-    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorPosition() / 2048) / 7));
+    return (2 * Math.PI * Units.inchesToMeters(3) * ((left1.getSelectedSensorPosition() / 2048) / 8.45));
   }
 
   public double getRightEncoder () {
@@ -226,11 +226,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getRightEncoderVelocity () {
-    return -(2 * Math.PI * Units.inchesToMeters(3) * ((right1.getSelectedSensorVelocity() / 2048) * 10) / 7);
+    return -(2 * Math.PI * Units.inchesToMeters(3) * ((right1.getSelectedSensorVelocity() / 2048) * 10) / 8.45);
   }
 
   public double getRightEncoderMeters () {
-    return -(2 * Math.PI * Units.inchesToMeters(3) * ((right1.getSelectedSensorPosition() / 2048) / 7));
+    return -(2 * Math.PI * Units.inchesToMeters(3) * ((right1.getSelectedSensorPosition() / 2048) / 8.45));
   }
 
   public CommandBase resetEncoders() {
@@ -268,9 +268,9 @@ public class Drivetrain extends SubsystemBase {
   }
   
   public CommandBase followPath(String traj) {
-    List<PathPlannerTrajectory> AutoPath = PathPlanner.loadPathGroup(traj, new PathConstraints(2.5 , 2.5));
+    List<PathPlannerTrajectory> AutoPath = PathPlanner.loadPathGroup(traj, new PathConstraints(2.5, 2.5));
     HashMap<String, Command> eventMap = new HashMap<>();
-    PIDConstants PID = new PIDConstants(2, 0, 0.1);
+    PIDConstants PID = new PIDConstants(2.5, 0, 0.1);
 
     // this.resetOdometry(AutoPath.getInitialPose());
 

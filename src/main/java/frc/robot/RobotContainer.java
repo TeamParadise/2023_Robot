@@ -61,7 +61,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand(String auto) {
-    if (auto.equals("kTest")) return RobotContainer.m_Drivetrain.followPath("Test");
+    if (auto.equals("kTest")) return RobotContainer.m_Drivetrain.followPath("Test Copy Copy");
     else if(auto.equals("TwoCube")) return new TwoCube();
     else if (auto.equals("ThreeCubeLeft")) return new ThreeCubeLeft();
     else if (auto.equals("ThreeCubeRight")) return new ThreeCubeRight();
