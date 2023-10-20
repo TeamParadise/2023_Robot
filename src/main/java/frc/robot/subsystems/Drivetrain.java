@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.canDeviceIds;
 import frc.robot.commands.ArmCommands.flipArmParallel;
+import frc.robot.commands.ArmCommands.shootMidFlip;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
@@ -279,6 +280,7 @@ public class Drivetrain extends SubsystemBase {
     eventMap.put("Shoot High", RobotContainer.m_Arm.setPosition(1));
     eventMap.put("Shoot Mid", RobotContainer.m_Arm.setPosition(2));
     eventMap.put("Shoot Low", RobotContainer.m_Arm.setPosition(3));
+    eventMap.put("Shoot Mid Flip", new shootMidFlip());
 
     // eventMap.put("Flip Arm", new PrintCommand("Flipping Arm"));
     // eventMap.put("Shoot High", new PrintCommand("Scoring High"));

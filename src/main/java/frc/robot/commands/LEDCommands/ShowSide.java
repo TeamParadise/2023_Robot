@@ -21,7 +21,7 @@ public class ShowSide extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (RobotContainer.m_Drivetrain.speedMultiplier < 0) {
+    if (RobotContainer.m_Arm.getEncoderPosition() * RobotContainer.m_Drivetrain.speedMultiplier >= 0) {
       RobotContainer.m_LED.setColor(0.77);
     } else {
       RobotContainer.m_LED.setColor(0.91);
