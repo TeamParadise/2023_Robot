@@ -11,9 +11,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
+import frc.robot.commands.LEDCommands.ShowSide;
 
 public class Intake extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -24,7 +28,7 @@ public class Intake extends SubsystemBase {
   DigitalInput intakeLimitSwitch = new DigitalInput(0); //LIMIT SWITCH
   RelativeEncoder intakeEncoder = intake1.getEncoder();
 
-  public boolean not_holding = true;
+  public int not_holding = 5;
  
   public Intake() {
     intake1.setInverted(true);
@@ -32,15 +36,25 @@ public class Intake extends SubsystemBase {
   }
 
   public void run_in(){
-
     if(intakeLimitSwitch.get() == true){ //if limit switch is not held
-      not_holding = true; //we are not holding a cube
+      not_holding = 0; //we are not holding a cube
       intake1.set(.4); //set intaking speeds
       intake2.set(-.4);
       
     }else{
       stopIntake();
-      not_holding = false;
+      if (not_holding < 5) {
+        System.out.println("Running");
+        RobotContainer.m_LED.blink(5);
+        /* Commands.run(new ShowCube(0.3)), null);
+          RobotContainer.m_LED.setColor(0.99);
+          System.out.println("Black");
+          new WaitCommand(0.3);
+          RobotContainer.m_LED.setColor(ShowSide.LedColor);
+          System.out.println("Color");
+          new WaitCommand(0.3); */
+      }
+      not_holding = 5;
     }
   }
 

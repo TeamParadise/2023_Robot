@@ -10,6 +10,7 @@ import frc.robot.RobotContainer;
 
 public class ShowSide extends CommandBase {
   /** Creates a new ShowSide. */
+  public static double LedColor;
   public ShowSide() {
     addRequirements(RobotContainer.m_LED);
   }
@@ -22,9 +23,11 @@ public class ShowSide extends CommandBase {
   @Override
   public void execute() {
     if (RobotContainer.m_Arm.getEncoderPosition() * RobotContainer.m_Drivetrain.speedMultiplier >= 0) {
-      RobotContainer.m_LED.setColor(0.77);
+      // RobotContainer.m_LED.setColor(0.77);
+      LedColor = 0.77;
     } else {
-      RobotContainer.m_LED.setColor(0.91);
+      // RobotContainer.m_LED.setColor(0.91);
+      LedColor = 0.91;
     }
   }
 

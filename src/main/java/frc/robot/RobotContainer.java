@@ -22,6 +22,9 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Vision;
+
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -36,6 +39,9 @@ public class RobotContainer {
   public static Intake m_intake = new Intake();
   public static Vision m_Vision = new Vision();
   public final static LED m_LED = new LED();
+  public final static ShowSide m_ShowSide = new ShowSide();
+
+  ;
 
   public static  CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   public static  CommandXboxController coDriverController = new CommandXboxController(OperatorConstants.kCoDriverControllerPort);
@@ -46,7 +52,6 @@ public class RobotContainer {
     configureBindings();
     m_Drivetrain.setDefaultCommand(new DriveArcade());
     m_intake.setDefaultCommand(new IntakeCommand());
-    m_LED.setDefaultCommand(new ShowSide());
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
@@ -65,13 +70,18 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand(String auto) {
-    if (auto.equals("kTest")) return RobotContainer.m_Drivetrain.followPath("Test Copy Copy Copy");
+    if (auto.equals("Three Cube Blue")) return RobotContainer.m_Drivetrain.followPath("Three Cube Blue");
+    if (auto.equals("Three Cube Red")) return RobotContainer.m_Drivetrain.followPath("Three Cube Red");
+    else if (auto.equals("Two Cube Blue")) return RobotContainer.m_Drivetrain.followPath("Two Cube Blue");
+    else if (auto.equals("Two Cube Red")) return RobotContainer.m_Drivetrain.followPath("Two Cube Red");
     else if(auto.equals("TwoCube")) return new TwoCube();
     else if (auto.equals("ThreeCubeLeft")) return new ThreeCubeLeft();
     else if (auto.equals("ThreeCubeRight")) return new ThreeCubeRight();
     else if(auto.equals("OneCubeDrive")) return new OneCubeDrive();
     else if(auto.equals("OneCubeNoDrive")) return new OneCubeNoDrive();
     // else if(auto.equals("OneCubeDock"))return new OneCubeDock();
+    else if (auto.equals("Balance Red")) return RobotContainer.m_Drivetrain.followPath("Balance Red");
+    else if (auto.equals("Balance Blue")) return RobotContainer.m_Drivetrain.followPath("Balance Blue");
     else return new OnlyDrive();
   }
 }

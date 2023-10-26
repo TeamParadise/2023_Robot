@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.AutoCommands.Balance;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -41,9 +42,14 @@ public class Robot extends TimedRobot {
     disabledTimer = new Timer();
     RobotContainer.m_Drivetrain.resetOdometry(new Pose2d());
 
+    m_chooser.addOption("Three Cube Blue", "Three Cube Blue");
+    m_chooser.setDefaultOption("Two Cube Blue", "Two Cube Blue");
+
+    m_chooser.addOption("Three Cube Red", "Three Cube Red");
+    m_chooser.setDefaultOption("Two Cube Red", "Two Cube Red");
 
     m_chooser.addOption("Two Cube", kTwoCubeAuto);
-    m_chooser.setDefaultOption("kTest", "kTest");
+    m_chooser.addOption("kTest", "kTest");
     m_chooser.addOption("Three Cube Left", kThreeCubeLeftAuto);
     m_chooser.addOption("Three Cube Right", kThreeCubeRightAuto);
     m_chooser.addOption("One Cube Drive", kOneCubeDrive);
@@ -69,11 +75,11 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     // RobotContainer.m_Arm.zeroEncoder();
-    if (disabledTimer.hasElapsed(3))
-    {
-      RobotContainer.m_Drivetrain.setCoastMode();
-      disabledTimer.stop();
-    }
+    // if (disabledTimer.hasElapsed(3))
+    // {
+    //   RobotContainer.m_Drivetrain.setCoastMode();
+    //   disabledTimer.stop();
+    // }
   }
 
   @Override
@@ -105,21 +111,21 @@ public class Robot extends TimedRobot {
     RobotContainer.m_Drivetrain.initializeEncoders();
     RobotContainer.m_Drivetrain.setBrakeMode();
 
-    // if(m_chooser.getSelected().equals("TwoCube")){
-    //   RobotContainer.m_Arm.setBackBottom();
-    // }else if(m_chooser.getSelected().equals("OneCubeDrive")){
-    //   RobotContainer.m_Arm.setFrontBottom();
-    // }else if(m_chooser.getSelected().equals("ThreeCubeLeft")){
-    //     RobotContainer.m_Arm.setBackBottom();
-    // }else if(m_chooser.getSelected().equals("ThreeCubeRight")){
-    //       RobotContainer.m_Arm.setBackBottom();
-    // } else if(m_chooser.getSelected().equals("OneCubeNoDrive")){
-    //   RobotContainer.m_Arm.setBackBottom();
-    // } else if(m_chooser.getSelected().equals("OneCubeDock")){
-    //     RobotContainer.m_Arm.setFrontBottom();
-    // } else{
-    //   RobotContainer.m_Arm.setBackBottom();
-    // }
+    if(m_chooser.getSelected().equals("TwoCube")){
+      RobotContainer.m_Arm.setBackBottom();
+    }else if(m_chooser.getSelected().equals("OneCubeDrive")){
+      RobotContainer.m_Arm.setFrontBottom();
+    }else if(m_chooser.getSelected().equals("ThreeCubeLeft")){
+        RobotContainer.m_Arm.setBackBottom();
+    }else if(m_chooser.getSelected().equals("ThreeCubeRight")){
+          RobotContainer.m_Arm.setBackBottom();
+    } else if(m_chooser.getSelected().equals("OneCubeNoDrive")){
+      RobotContainer.m_Arm.setBackBottom();
+    } else if(m_chooser.getSelected().equals("OneCubeDock")){
+        RobotContainer.m_Arm.setFrontBottom();
+    } else{
+     
+    }
   }
 
   /** This function is called periodically during operator control. */
@@ -138,7 +144,8 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   //  RobotContainer.m_Drivetrain.voltTank(2, -2 );
-    // RobotContainer.m_Arm.ArmMotor.set(ControlMode.PercentOutput, -.2);  
+    // RobotContainer.m_Arm.ArmMotor.set(ControlMode.PercentOutput, -.2); 
+    new Balance(); 
   }
 
   /** This function is called once when the robot is first started up. */

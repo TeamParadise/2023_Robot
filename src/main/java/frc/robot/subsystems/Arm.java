@@ -161,6 +161,20 @@ public class Arm extends SubsystemBase {
     });
   }
 
+  
+  public CommandBase scoreMidAuto(){ 
+    return runOnce(()->{ 
+        while(ArmMotor.getSelectedSensorPosition() < 3000){
+            if (ArmMotor.getSelectedSensorPosition() < 750)
+                ArmMotor.set(ControlMode.PercentOutput, .35);      
+            else
+                ArmMotor.set(ControlMode.PercentOutput, 0);
+            }
+        currentPosition = ArmPosition.FRONT;
+        RobotContainer.m_intake.dispense(0.6, 0.8);
+    });
+  }
+
 
 
   public CommandBase autoNudge(){ //nudges the arm forward for the beginning of a match
@@ -169,7 +183,7 @@ public class Arm extends SubsystemBase {
             ArmMotor.set(ControlMode.PercentOutput, -.15);
         }
         ArmMotor.set(ControlMode.PercentOutput, 0);
-        currentPosition = ArmPosition.BACK;
+        currentPosition = ArmPosition.BACK;     
     });
   }
 

@@ -2,18 +2,18 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.75,
-        "y": 4.45
+        "x": 1.84,
+        "y": 4.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.307341719484153,
-        "y": 4.45
+        "x": 2.63536538074706,
+        "y": 4.55
       },
       "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
-      "isLocked": true,
+      "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
@@ -27,16 +27,16 @@
     },
     {
       "anchorPoint": {
-        "x": 5.598171196342393,
-        "y": 4.4648947417552955
+        "x": 6.660153833128179,
+        "y": 4.613343927542556
       },
       "prevControl": {
-        "x": 3.6442917968722295,
-        "y": 4.4648947417552955
+        "x": 5.883650399779431,
+        "y": 4.63618226381752
       },
       "nextControl": {
-        "x": 3.6442917968722295,
-        "y": 4.4648947417552955
+        "x": 5.883650399779431,
+        "y": 4.63618226381752
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -52,25 +52,25 @@
     },
     {
       "anchorPoint": {
-        "x": 2.45,
-        "y": 4.45
+        "x": 2.5149957992223677,
+        "y": 4.521990582442704
       },
       "prevControl": {
-        "x": 4.661799409068904,
-        "y": 4.449999999999999
+        "x": 3.5677910823105057,
+        "y": 4.521990582442704
       },
       "nextControl": {
-        "x": 4.661799409068904,
-        "y": 4.449999999999999
+        "x": 3.5677910823105057,
+        "y": 4.521990582442704
       },
       "holonomicAngle": 0,
       "isReversal": true,
       "velOverride": null,
-      "isLocked": true,
+      "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "Shoot Mid",
+          "Shoot Mid Auto",
           "Flip Arm"
         ],
         "executionBehavior": "sequential",
@@ -80,16 +80,16 @@
     },
     {
       "anchorPoint": {
-        "x": 5.461141178692614,
-        "y": 3.4714271137943995
+        "x": 6.637315496853216,
+        "y": 3.779744653506401
       },
       "prevControl": {
-        "x": 5.004374453193351,
-        "y": 4.053804688805959
+        "x": 5.2555961522179455,
+        "y": 4.898823130979595
       },
       "nextControl": {
-        "x": 5.004374453193351,
-        "y": 4.053804688805959
+        "x": 5.2555961522179455,
+        "y": 4.898823130979595
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -105,40 +105,12 @@
     },
     {
       "anchorPoint": {
-        "x": 2.65,
-        "y": 4.45
+        "x": 2.9146666840342226,
+        "y": 4.521990582442704
       },
       "prevControl": {
-        "x": 4.41098201532057,
-        "y": 4.45
-      },
-      "nextControl": {
-        "x": 1.9056333684095916,
-        "y": 4.45
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [
-          "Shoot Low",
-          "Flip Arm"
-        ],
-        "executionBehavior": "sequential",
-        "waitBehavior": "before",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 1.75,
-        "y": 4.45
-      },
-      "prevControl": {
-        "x": 2.185365909177156,
-        "y": 4.45
+        "x": 4.011858009915699,
+        "y": 4.521990582442704
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -147,28 +119,18 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Flip Arm",
+          "Shoot Low"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "maxVelocity": 2.0,
-  "maxAcceleration": 2.0,
+  "maxVelocity": 2.25,
+  "maxAcceleration": 2.5,
   "isReversed": false,
-  "markers": [
-    {
-      "position": 0.8727272727273263,
-      "names": [
-        "Flip Arm"
-      ]
-    },
-    {
-      "position": 3.054545454545497,
-      "names": [
-        "Flip Arm"
-      ]
-    }
-  ]
+  "markers": []
 }

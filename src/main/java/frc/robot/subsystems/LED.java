@@ -5,20 +5,38 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LEDProfiles;
+import frc.robot.Constants.LEDConstants;
 
 public class LED extends SubsystemBase {
+  // Initalize LED strip and LED buffer
+  int ledStrip = LEDConstants.kLEDPWMPort;
+  int ledBuffer = LEDConstants.kLEDLength;
 
-  public static Spark m_blinkin = new Spark(0);
-  /** Creates a new LedSubsystem. */
-  public LED() {}
-
-  public void setColor(double pwmValue) {
-    m_blinkin.set(pwmValue);
+  LEDProfiles strip1 = new LEDProfiles(ledStrip, ledBuffer);
+  public LED() {
+    setAll(Color.kRed);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+  }
+
+  public void setAll(Color color){
+    strip1.setAll(color);
+  }
+
+  public void blink(int times) {
+    strip1.blink(times);
+  }
+
+  public void halfAndHalf(double side) {
+    if (side < 0) {
+      strip1.halfAndHalf(Color.kGreen, Color.kPurple);
+    } else {
+      strip1.halfAndHalf(Color.kPurple, Color.kGreen);
+    }
   }
 }

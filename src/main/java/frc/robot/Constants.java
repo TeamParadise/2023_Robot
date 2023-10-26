@@ -64,6 +64,14 @@ public final class Constants {
     public static final double kd_TURNRIGHT = 0.0035;
   }
 
+  // Constants for LED strip
+  public static class LEDConstants {
+    // Specify LED PWM port
+    public static final int kLEDPWMPort = 0;
+    // Specify LED length
+    public static final int kLEDLength = 150;
+  }
+
   // public class ServoPortConstants{
   //   //SERVOS
   //   public static final int LIMELIGHT_SERVO_PORT = 3;

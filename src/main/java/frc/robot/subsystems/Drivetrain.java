@@ -114,13 +114,14 @@ public class Drivetrain extends SubsystemBase {
   public CommandBase invertDrive(){ //swap front and back of robot
     return runOnce(()->{
       speedMultiplier *= -1;
+      RobotContainer.m_LED.halfAndHalf(speedMultiplier);
     }); 
   }
 
   public CommandBase halfSpeed(){
     return runOnce(() -> {
       if (Math.abs(speedMultiplier) < 1) speedMultiplier = Math.abs(speedMultiplier)/speedMultiplier;
-      else speedMultiplier *= 0.75;
+      else speedMultiplier *= 0.65;
     });
   }
 
@@ -269,7 +270,7 @@ public class Drivetrain extends SubsystemBase {
   }
   
   public CommandBase followPath(String traj) {
-    List<PathPlannerTrajectory> AutoPath = PathPlanner.loadPathGroup(traj, new PathConstraints(2.5, 2.5));
+    List<PathPlannerTrajectory> AutoPath = PathPlanner.loadPathGroup(traj, new PathConstraints(3, 2.25));
     HashMap<String, Command> eventMap = new HashMap<>();
     PIDConstants PID = new PIDConstants(2.5, 0, 0.1);
 
@@ -279,6 +280,7 @@ public class Drivetrain extends SubsystemBase {
     eventMap.put("Shoot High Auto", RobotContainer.m_Arm.scoreHighAuto());
     eventMap.put("Shoot High", RobotContainer.m_Arm.setPosition(1));
     eventMap.put("Shoot Mid", RobotContainer.m_Arm.setPosition(2));
+    eventMap.put("Shoot Mid Auto",  RobotContainer.m_Arm.scoreMidAuto());
     eventMap.put("Shoot Low", RobotContainer.m_Arm.setPosition(3));
     eventMap.put("Shoot Mid Flip", new shootMidFlip());
 
@@ -382,6 +384,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Left Position Meters", getLeftEncoderMeters());
     SmartDashboard.putNumber("Right Position Meters", getRightEncoderMeters());
     SmartDashboard.putNumber("Gyro", imu.getRotation2d().getDegrees());
+    SmartDashboard.putBoolean("Half Speed", Math.abs(speedMultiplier) < 1);
     m_Odometry.update(getRobotAngle2d(), getLeftEncoderMeters(), getRightEncoderMeters());
     m_field.setRobotPose(getFieldPos());
 

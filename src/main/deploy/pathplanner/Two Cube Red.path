@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.0,
-        "y": 3.0
+        "x": 14.69,
+        "y": 1.0377338569403984
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0,
-        "y": 3.0
+        "x": 14.114289100033496,
+        "y": 1.0377338569403984
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -16,24 +16,27 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Shoot High Auto",
+          "Flip Arm"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 3.0,
-        "y": 5.0
+        "x": 9.698330655568675,
+        "y": 0.9139674336355808
       },
       "prevControl": {
-        "x": 3.0,
-        "y": 4.0
+        "x": 13.715972617978753,
+        "y": 0.7329326709293045
       },
       "nextControl": {
-        "x": 3.0,
-        "y": 4.0
+        "x": 13.715972617978753,
+        "y": 0.7329326709293045
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -41,20 +44,22 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "Shoot Mid Flip"
+        ],
         "executionBehavior": "parallel",
-        "waitBehavior": "none",
+        "waitBehavior": "minimum",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 5.0,
-        "y": 3.0
+        "x": 14.65,
+        "y": 1.0163059642358603
       },
       "prevControl": {
-        "x": 4.0,
-        "y": 3.0
+        "x": 13.277429999046586,
+        "y": 1.0163059642358603
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -63,12 +68,24 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Shoot Mid"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "markers": []
+  "maxVelocity": 2.0,
+  "maxAcceleration": 2.0,
+  "isReversed": false,
+  "markers": [
+    {
+      "position": 1.0618181818181793,
+      "names": [
+        "Flip Arm"
+      ]
+    }
+  ]
 }

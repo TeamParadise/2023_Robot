@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.75,
-        "y": 4.45
+        "x": 1.83,
+        "y": 1.0377338569403984
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.088555500260872,
-        "y": 4.45
+        "x": 2.405710899966504,
+        "y": 1.0377338569403984
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -27,22 +27,22 @@
     },
     {
       "anchorPoint": {
-        "x": 3.0,
-        "y": 4.45
+        "x": 6.870743907758601,
+        "y": 0.9234879277359507
       },
       "prevControl": {
-        "x": 2.670602354397449,
-        "y": 4.45
+        "x": 2.8530953974021975,
+        "y": 0.7425985398289086
       },
       "nextControl": {
-        "x": 3.339800984124637,
-        "y": 4.45
+        "x": 2.8530953974021975,
+        "y": 0.7425985398289086
       },
       "holonomicAngle": 0,
-      "isReversal": false,
+      "isReversal": true,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": true,
+      "isStopPoint": false,
       "stopEvent": {
         "names": [
           "Shoot Mid Flip"
@@ -54,12 +54,12 @@
     },
     {
       "anchorPoint": {
-        "x": 4.0,
-        "y": 4.45
+        "x": 1.8526840472484365,
+        "y": 1.0163059642358603
       },
       "prevControl": {
-        "x": 3.6916076694607165,
-        "y": 4.45
+        "x": 3.225254048201853,
+        "y": 1.01630596423586
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -68,8 +68,10 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Shoot Mid"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -78,5 +80,12 @@
   "maxVelocity": 2.0,
   "maxAcceleration": 2.0,
   "isReversed": false,
-  "markers": []
+  "markers": [
+    {
+      "position": 1.0618181818181793,
+      "names": [
+        "Flip Arm"
+      ]
+    }
+  ]
 }
